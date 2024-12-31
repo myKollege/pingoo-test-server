@@ -1,0 +1,29 @@
+{
+  "messaging_product": "whatsapp",
+  "to": "customer_phone_number",
+  "type": "interactive",
+  "interactive": {
+    "type": "button",
+    "header": {
+      "type": "text",
+      "text": "Welcome to our store! 🎉"
+    },
+    "body": {
+      "text": "Click below to see our latest products."
+    },
+    "footer": {
+      "text": "Shop Now!"
+    },
+    "action": {
+      "buttons": [
+        {
+          "type": "reply",
+          "reply": {
+            "id": "view_products",
+            "title": "View Products"
+          }
+        }
+      ]
+    }
+  }
+}

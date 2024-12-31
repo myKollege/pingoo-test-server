@@ -1,71 +1,32 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
 const axios = require("axios");
 
 const app = express();
 app.use(bodyParser.json());
 
-// Constants
 const PORT = process.env.PORT || 3000;
 const VERIFY_TOKEN = "my-secret-token";
 const ACCESS_TOKEN = "EAAWQBCW9JhkBO40FHqmfcIMjGOF2md6ajzzj4RlMeToFxLUBpSfy4p5fF65fRxorHIzbJ9uxNREuadvYgrGQy3HLvhr5G6QCxSdnq0eWSpl76SIf7WatXWUJTKyCdkUMTTlZCKtCvybZC5ogaIZCYHIVkXhnwel1mQFeIVQDVZCYqcdKkUpMJr1f3UWQ5cjRCsArHGCHrggRRuZBgZBY6AmU7CYzNxDpGvhXAvqYKfARQZD"; // Replace with your access token
-const WHATSAPP_API_URL = "https://graph.facebook.com/v21.0/523374564194215/messages";
-const PHONE_NUMBER_ID = "523374564194215";
-const ACCOUNT_ID = "516787181518685";
-const MONGO_URI = "mongodb+srv://pingoo:AwRlQKJJxwTYnP4l@cluster0.tzceu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // Update this with your MongoDB URI
-
-// Connect to MongoDB
-mongoose.connect(MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-mongoose.connection.on("connected", () => {
-  console.log("Connected to MongoDB");
-});
-mongoose.connection.on("error", (err) => {
-  console.error("MongoDB connection error:", err);
-});
-
-// Define a Message schema
-const messageSchema = new mongoose.Schema(
-  {
-    from: String,
-    body: String,
-    timestamp: Number,
-    messageId: String,
-  },
-  { timestamps: true }
-);
-
-const Message = mongoose.model("Message", messageSchema);
+const WHATSAPP_API_URL = " https://graph.facebook.com/v21.0/523374564194215/messages";
+const PHONE_NUMBER_ID = "523374564194215"
+const ACCOUNT_ID = "516787181518685"
 
 // Webhook endpoint for receiving messages
-app.post("/webhook", async (req, res) => {
+app.post("/webhook", (req, res) => {
   const body = req.body;
 
+  // Verify this is a webhook from WhatsApp
   if (body.object === "whatsapp_business_account") {
-    body.entry.forEach(async (entry) => {
+    body.entry.forEach((entry) => {
       const changes = entry.changes;
-      changes.forEach(async (change) => {
+      changes.forEach((change) => {
         if (change.value && change.value.messages) {
           const messages = change.value.messages;
-
-          for (const message of messages) {
+          messages.forEach((message) => {
             console.log("Received message:", message);
-
-            // Save the entire message to MongoDB
-            try {
-              const newMessage = new Message({
-                rawMessage: message, // Save the raw message object
-              });
-
-              await newMessage.save();
-              console.log("Raw message saved to database:", newMessage);
-            } catch (error) {
-              console.error("Error saving raw message to database:", error);
-            }
-          }
+            // Process the message and respond if needed
+          });
         }
       });
     });
@@ -89,13 +50,14 @@ app.get("/webhook", (req, res) => {
   }
 });
 
+
 // Endpoint to send messages
 app.post("/send-message", async (req, res) => {
   const { phoneNumber, message } = req.body;
 
   try {
     const response = await axios.post(
-      `${WHATSAPP_API_URL}/${PHONE_NUMBER_ID}/messages`,
+      `${WHATSAPP_API_URL}/<phone-number-id>/messages`,
       {
         messaging_product: "whatsapp",
         to: phoneNumber,
@@ -115,7 +77,6 @@ app.post("/send-message", async (req, res) => {
   }
 });
 
-// Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
