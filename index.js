@@ -15,7 +15,9 @@ const ACCESS_TOKEN = "YOUR_ACCESS_TOKEN"; // Replace with your access token
 const WHATSAPP_API_URL = "https://graph.facebook.com/v21.0/523374564194215/messages";
 const MONGO_URI = "mongodb+srv://pingoo:AwRlQKJJxwTYnP4l@cluster0.tzceu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // MongoDB URI
 const DATABASE_NAME = "whatsappMessages";
-const COLLECTION_NAME = "messages";
+const MESSAGE_COLLECTION = "messages";
+const ORDER_COLLECTION = "orders";
+
 
 // MongoDB Client and Connection Handling
 let db;
@@ -32,37 +34,50 @@ async function connectToDatabase() {
 }
 
 // Webhook endpoint for receiving messages
+
+// Webhook endpoint
 app.post("/webhook", async (req, res) => {
   const body = req.body;
 
   if (body.object === "whatsapp_business_account") {
-    body.entry.forEach(async (entry) => {
-      const changes = entry.changes;
-      changes.forEach(async (change) => {
-        if (change.value && change.value.messages) {
-          const messages = change.value.messages;
+    try {
+      for (const entry of body.entry) {
+        for (const change of entry.changes) {
+          if (change.value && change.value.messages) {
+            for (const message of change.value.messages) {
+              console.log("Received message:", message);
 
-          for (const message of messages) {
-            console.log("Received message:", message);
-
-            // Save the entire message to MongoDB
-            try {
-              await db.collection(COLLECTION_NAME).insertOne({ rawMessage: message });
-              console.log("Message saved to database:", message);
-            } catch (error) {
-              console.error("Error saving message to database:", error);
+              if (message.type === "text") {
+                // Save messages
+                try {
+                  await db.collection(MESSAGE_COLLECTION).insertOne({ rawMessage: message });
+                  console.log("Message saved to database:", message);
+                } catch (error) {
+                  console.error("Error saving message to database:", error);
+                }
+              }
+              if (message.type === "order") {
+                // Save orders
+                try {
+                  await db.collection(ORDER_COLLECTION).insertOne({ rawOrder: message });
+                  console.log("Order saved to database:", message);
+                } catch (error) {
+                  console.error("Error saving order to database:", error);
+                }
+              }
             }
           }
         }
-      });
-    });
-
-    res.sendStatus(200);
+      }
+      res.sendStatus(200);
+    } catch (error) {
+      console.error("Error processing webhook:", error);
+      res.sendStatus(500);
+    }
   } else {
     res.sendStatus(404);
   }
 });
-
 // Verification endpoint for webhook setup
 app.get("/webhook", (req, res) => {
   const mode = req.query["hub.mode"];
@@ -110,6 +125,17 @@ app.get("/messages", async (req, res) => {
   } catch (error) {
     console.error("Error fetching messages:", error);
     res.status(500).send("Error fetching messages");
+  }
+});
+
+// GET endpoint to fetch all orders
+app.get("/orders", async (req, res) => {
+  try {
+    const orders = await db.collection(ORDER_COLLECTION).find().toArray();
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    res.status(500).json({ error: "Failed to fetch orders" });
   }
 });
 
