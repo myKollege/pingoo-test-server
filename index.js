@@ -1,7 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
-const axios = require("axios");
+const { MongoClient } = require("mongodb");
 
 const app = express();
 app.use(bodyParser.json());
@@ -9,36 +8,20 @@ app.use(bodyParser.json());
 // Constants
 const PORT = process.env.PORT || 3000;
 const VERIFY_TOKEN = "my-secret-token";
-const ACCESS_TOKEN = "EAAWQBCW9JhkBO40FHqmfcIMjGOF2md6ajzzj4RlMeToFxLUBpSfy4p5fF65fRxorHIzbJ9uxNREuadvYgrGQy3HLvhr5G6QCxSdnq0eWSpl76SIf7WatXWUJTKyCdkUMTTlZCKtCvybZC5ogaIZCYHIVkXhnwel1mQFeIVQDVZCYqcdKkUpMJr1f3UWQ5cjRCsArHGCHrggRRuZBgZBY6AmU7CYzNxDpGvhXAvqYKfARQZD"; // Replace with your access token
+const ACCESS_TOKEN = "YOUR_ACCESS_TOKEN"; // Replace with your access token
 const WHATSAPP_API_URL = "https://graph.facebook.com/v21.0/523374564194215/messages";
-const PHONE_NUMBER_ID = "523374564194215";
-const ACCOUNT_ID = "516787181518685";
-const MONGO_URI = "mongodb+srv://pingoo:AwRlQKJJxwTYnP4l@cluster0.tzceu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // Update this with your MongoDB URI
+const MONGO_URI = "mongodb+srv://pingoo:AwRlQKJJxwTYnP4l@cluster0.tzceu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // Update with your MongoDB URI
+const DATABASE_NAME = "whatsappMessages";
+const COLLECTION_NAME = "messages";
 
-// Connect to MongoDB
-mongoose.connect(MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-mongoose.connection.on("connected", () => {
-  console.log("Connected to MongoDB");
-});
-mongoose.connection.on("error", (err) => {
-  console.error("MongoDB connection error:", err);
-});
-
-// Define a Message schema
-const messageSchema = new mongoose.Schema(
-  {
-    from: String,
-    body: String,
-    timestamp: Number,
-    messageId: String,
-  },
-  { timestamps: true }
-);
-
-const Message = mongoose.model("Message", messageSchema);
+// MongoDB Client
+let db;
+MongoClient.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then((client) => {
+    db = client.db(DATABASE_NAME);
+    console.log(`Connected to MongoDB: ${DATABASE_NAME}`);
+  })
+  .catch((error) => console.error("Failed to connect to MongoDB:", error));
 
 // Webhook endpoint for receiving messages
 app.post("/webhook", async (req, res) => {
@@ -56,14 +39,10 @@ app.post("/webhook", async (req, res) => {
 
             // Save the entire message to MongoDB
             try {
-              const newMessage = new Message({
-                rawMessage: message, // Save the raw message object
-              });
-
-              await newMessage.save();
-              console.log("Raw message saved to database:", newMessage);
+              await db.collection(COLLECTION_NAME).insertOne({ rawMessage: message });
+              console.log("Message saved to database:", message);
             } catch (error) {
-              console.error("Error saving raw message to database:", error);
+              console.error("Error saving message to database:", error);
             }
           }
         }
@@ -95,7 +74,7 @@ app.post("/send-message", async (req, res) => {
 
   try {
     const response = await axios.post(
-      `${WHATSAPP_API_URL}/${PHONE_NUMBER_ID}/messages`,
+      `${WHATSAPP_API_URL}/<phone-number-id>/messages`,
       {
         messaging_product: "whatsapp",
         to: phoneNumber,
@@ -112,6 +91,17 @@ app.post("/send-message", async (req, res) => {
   } catch (error) {
     console.error("Error sending message:", error.response.data);
     res.status(500).send(error.response.data);
+  }
+});
+
+// GET API to fetch messages
+app.get("/messages", async (req, res) => {
+  try {
+    const messages = await db.collection(COLLECTION_NAME).find().toArray();
+    res.status(200).json(messages);
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+    res.status(500).send("Error fetching messages");
   }
 });
 
