@@ -1,9 +1,11 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const { MongoClient } = require("mongodb");
+const cors = require("cors"); // Import the CORS middleware
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors()); // Enable CORS for all routes
 
 // Constants
 const PORT = process.env.PORT || 3000;
