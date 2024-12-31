@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const { MongoClient } = require("mongodb");
 const cors = require("cors"); // Import the CORS middleware
+const axios = require("axios");
 
 const app = express();
 app.use(bodyParser.json());
@@ -12,18 +13,23 @@ const PORT = process.env.PORT || 3000;
 const VERIFY_TOKEN = "my-secret-token";
 const ACCESS_TOKEN = "YOUR_ACCESS_TOKEN"; // Replace with your access token
 const WHATSAPP_API_URL = "https://graph.facebook.com/v21.0/523374564194215/messages";
-const MONGO_URI = "mongodb+srv://pingoo:AwRlQKJJxwTYnP4l@cluster0.tzceu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // Update with your MongoDB URI
+const MONGO_URI = "mongodb+srv://pingoo:AwRlQKJJxwTYnP4l@cluster0.tzceu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // MongoDB URI
 const DATABASE_NAME = "whatsappMessages";
 const COLLECTION_NAME = "messages";
 
-// MongoDB Client
+// MongoDB Client and Connection Handling
 let db;
-MongoClient.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then((client) => {
+
+async function connectToDatabase() {
+  try {
+    const client = await MongoClient.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
     db = client.db(DATABASE_NAME);
     console.log(`Connected to MongoDB: ${DATABASE_NAME}`);
-  })
-  .catch((error) => console.error("Failed to connect to MongoDB:", error));
+  } catch (error) {
+    console.error("Failed to connect to MongoDB:", error);
+    process.exit(1); // Exit if database connection fails
+  }
+}
 
 // Webhook endpoint for receiving messages
 app.post("/webhook", async (req, res) => {
@@ -107,7 +113,9 @@ app.get("/messages", async (req, res) => {
   }
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// Start the server after the database is connected
+connectToDatabase().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
 });
