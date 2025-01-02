@@ -48,20 +48,20 @@ app.post("/webhook", async (req, res) => {
             for (const message of change.value.messages) {
               console.log("Received message:", message);
 
-              if (message.type === "text") {
+              if (message?.type === "text") {
                 // Save messages
                 try {
 
                   if (message?.text?.body && message?.text?.body?.includes('order from table')) {
                     console.log('found');
-
-                    const tableNo = text?.match(/table-(\d+)/);
+                    await sendMessage(user, 'select_category')
+                    const tableNo = message?.text?.body?.match(/table-(\d+)/);
                     const user = message?.from
 
                     console.log(user, tableNo)
 
                     await db.collection(table_COLLECTION).insertOne({ tableNo, user, message: message.text.body });
-                    await sendMessage(user, 'select_category')
+                    // await sendMessage(user, 'select_category')
 
                   }
                   await db.collection(MESSAGE_COLLECTION).insertOne({ rawMessage: message });
