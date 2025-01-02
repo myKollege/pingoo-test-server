@@ -53,8 +53,8 @@ app.post("/webhook", async (req, res) => {
                 try {
 
                   if (message?.text?.body && message?.text?.body?.includes('order from table')) {
-                    console.log('found');
-                    await sendMessage(user, 'select_category')
+                    console.log('found', message?.from);
+                    await sendMessage(message?.from, 'select_category')
                     const tableNo = message?.text?.body?.match(/table-(\d+)/);
                     const user = message?.from
 
