@@ -58,7 +58,7 @@ app.post("/webhook", async (req, res) => {
                     const tableNo = message?.text?.body?.match(/table-(\d+)/);
                     const user = message?.from
 
-                    console.log(user, tableNo)
+                    console.log(user, tableNo, 'pppppppp')
 
                     await db.collection(table_COLLECTION).insertOne({ tableNo, user, message: message.text.body });
                     // await sendMessage(user, 'select_category')
