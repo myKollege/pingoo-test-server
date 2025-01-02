@@ -55,7 +55,8 @@ app.post("/webhook", async (req, res) => {
                   if (message?.text?.body && message?.text?.body?.includes('order from table')) {
                     console.log('found', message?.from);
                     await sendMessage(message?.from, 'select_category')
-                    const tableNo = message?.text?.body?.match(/table-(\d+)/);
+                    const tableNoMatch = message?.text?.body?.match(/table-(\d+)/);
+                    const tableNo = tableNoMatch ? tableNoMatch[1] : null;
                     const user = message?.from
 
                     console.log(user, tableNo, 'pppppppp')
@@ -81,7 +82,7 @@ app.post("/webhook", async (req, res) => {
               }
 
               if (message.type === 'interactive') {
-                await sendMessage(message?.fro, 'catalog_offer_test_two')
+                await sendMessage(message?.from, 'catalog_offer_test_two')
               }
             }
           }
