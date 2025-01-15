@@ -11,7 +11,7 @@ app.use(cors()); // Enable CORS for all routes
 // Constants
 const PORT = process.env.PORT || 3000;
 const VERIFY_TOKEN = "my-secret-token";
-const ACCESS_TOKEN = "EAAFzFylf8lMBO3Gm2AZAnYLJuKILkg1CjNC4gQgkxoqR4yQA3VHGA37rYD17fe4fHQk1AULDHioSGR2uSeye55BixZB1ZAsAitCQUjU3jFfjbnzdPZCYEtj9IxfL2ZAB1jrzI59bw7hOOoiQjsG2JOZB8tT2QCGfMLZANnC4ZCBrrDCTqzZBxh0KlW6kaXdiOAbMklh6X53HaVJYazm93D8syL0d78MYfZBH4ps7K4bHubg5YZD"; // Replace with your access token
+const ACCESS_TOKEN = "EAAFzFylf8lMBO7s5SER7Vrt06mllYwo25nEuv6wpl0p4TzA23SUZC7uJ79Igc61NH2PxepHH3yocjlH8DxAgjk7GHztUbJHKpfiLP2bH3ZBykiBNQmFuu2NES3A08XNqYrqt4coDy0WVr0nQq8857cLJTPMYZCYxLa3ez1MNM0RZAc6WDZAc1SmoWSeTHUSFBDv5kXgLv8psyZCoNZBsd8ow1d83AA6zWT7VtMj9fR65R0ZD"; // Replace with your access token
 const WHATSAPP_API_URL = "https://graph.facebook.com/v21.0/523374564194215/messages";
 const MONGO_URI = "mongodb+srv://pingoo:AwRlQKJJxwTYnP4l@cluster0.tzceu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // MongoDB URI
 const DATABASE_NAME = "whatsappMessages";
