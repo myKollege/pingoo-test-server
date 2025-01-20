@@ -71,6 +71,11 @@ app.post("/webhook", async (req, res) => {
                     await sendMessage(message?.from, 'demo_appointment_booking')
 
                   }
+                  else if (message?.text?.body && message?.text?.body?.includes('demo_shop')) {
+
+                    await sendMessage(message?.from, 'catalog_offer_test_two')
+
+                  }
 
 
 
