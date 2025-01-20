@@ -11,7 +11,7 @@ app.use(cors()); // Enable CORS for all routes
 // Constants
 const PORT = process.env.PORT || 3000;
 const VERIFY_TOKEN = "my-secret-token";
-const ACCESS_TOKEN = "EAAFzFylf8lMBO7s5SER7Vrt06mllYwo25nEuv6wpl0p4TzA23SUZC7uJ79Igc61NH2PxepHH3yocjlH8DxAgjk7GHztUbJHKpfiLP2bH3ZBykiBNQmFuu2NES3A08XNqYrqt4coDy0WVr0nQq8857cLJTPMYZCYxLa3ez1MNM0RZAc6WDZAc1SmoWSeTHUSFBDv5kXgLv8psyZCoNZBsd8ow1d83AA6zWT7VtMj9fR65R0ZD"; // Replace with your access token
+const ACCESS_TOKEN = "EAAFzFylf8lMBO5Tyy8gStuHE2PU7mPiy03h1fXJlLDjoCBbXfsWBlMJeZCziGUi6CE4zSzLtcpMYg8xZBpyX5vsUB8aZBZC11ZCabCcSfZBGp2sDEHU6PDRt59jlb5QQnVezP8C05XSeZCAMbrYGOb5UWTOnllVzXlQJIC1R6RR842wqJjIIijB10sH2UdoFjkcMLr28VHXa2N9y0MRYNHfALbP8HZAZCZB0zNRdZAgIe1kqRkZD";
 const WHATSAPP_API_URL = "https://graph.facebook.com/v21.0/523374564194215/messages";
 const MONGO_URI = "mongodb+srv://pingoo:AwRlQKJJxwTYnP4l@cluster0.tzceu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // MongoDB URI
 const DATABASE_NAME = "whatsappMessages";
@@ -52,7 +52,7 @@ app.post("/webhook", async (req, res) => {
                 // Save messages
                 try {
 
-                  if (message?.text?.body && message?.text?.body?.includes('order from table')) {
+                  if (message?.text?.body && message?.text?.body?.includes('demo_restaurant')) {
                     console.log('found', message?.from);
                     await sendMessage(message?.from, 'select_category')
                     const tableNoMatch = message?.text?.body?.match(/table-(\d+)/);
@@ -65,6 +65,24 @@ app.post("/webhook", async (req, res) => {
                     // await sendMessage(user, 'select_category')
 
                   }
+
+                  else if (message?.text?.body && message?.text?.body?.includes('demo_booking')) {
+
+                    await sendMessage(message?.from, 'demo_appointment_booking')
+
+                  }
+
+
+
+
+
+
+
+
+
+
+
+
                   await db.collection(MESSAGE_COLLECTION).insertOne({ rawMessage: message });
                   console.log("Message saved to database:", message);
                 } catch (error) {
@@ -143,6 +161,8 @@ app.post("/send-message", async (req, res) => {
     res.status(500).send(error.response.data);
   }
 });
+// Endpoint to send messages
+
 
 // GET API to fetch messages
 app.get("/messages", async (req, res) => {
@@ -211,14 +231,11 @@ async function sendMessage(phoneNumber, template_Name) {
       }
     }
   }
-
-
-
   if (template_Name == 'select_category') {
     body = {
       "messaging_product": "whatsapp",
       "recipient_type": "individual",
-      "to": "8801318048544",
+      "to": phoneNumber,
       "type": "template",
       "template": {
         "name": "select_category",
@@ -248,14 +265,12 @@ async function sendMessage(phoneNumber, template_Name) {
       }
     }
   }
-
-
   if (template_Name == 'catalog_offer_test_two') {
     body =
     {
       "messaging_product": "whatsapp",
       "recipient_type": "individual",
-      "to": "8801318048544",
+      "to": phoneNumber,
       "type": "template",
       "template": {
         "name": "catalog_offer_test_two",
@@ -294,6 +309,29 @@ async function sendMessage(phoneNumber, template_Name) {
               }
             ]
           }
+        ]
+      }
+    }
+  }
+  if (template_Name == 'demo_appointment_booking') {
+    body =
+    {
+      "messaging_product": "whatsapp",
+      "recipient_type": "individual",
+      "to": phoneNumber,
+      "type": "template",
+      "template": {
+        "name": "demo_appointment_booking",
+        "language": {
+          "code": "en_US"
+        },
+        "components": [
+          {
+            "type": "button",
+            "sub_type": "flow",
+            "index": "0"
+          }
+
         ]
       }
     }
