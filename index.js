@@ -11,8 +11,8 @@ app.use(cors()); // Enable CORS for all routes
 // Constants
 const PORT = process.env.PORT || 3000;
 const VERIFY_TOKEN = "my-secret-token";
-const ACCESS_TOKEN = "EAAFzFylf8lMBO5Tyy8gStuHE2PU7mPiy03h1fXJlLDjoCBbXfsWBlMJeZCziGUi6CE4zSzLtcpMYg8xZBpyX5vsUB8aZBZC11ZCabCcSfZBGp2sDEHU6PDRt59jlb5QQnVezP8C05XSeZCAMbrYGOb5UWTOnllVzXlQJIC1R6RR842wqJjIIijB10sH2UdoFjkcMLr28VHXa2N9y0MRYNHfALbP8HZAZCZB0zNRdZAgIe1kqRkZD";
-const WHATSAPP_API_URL = "https://graph.facebook.com/v21.0/523374564194215/messages";
+const ACCESS_TOKEN = "EAAOpPoBIEyoBOzOKdOtJ16JKtpSDUzo058PweeydvMcIQDX2p3HpN7DsIfp5sZCx6ff8oW4kmQofu1VoL1w5W1114AMz9h9CjymtPEUpo4l6UQxsLXeAfGWZBwlk6LuwJTr5IxcfLEX3J8NfRJFzUlZA3J7MGqthNBL8kIsqjoh5NNUDLqcwstCm0kkKzKIKQZDZD";
+const WHATSAPP_API_URL = "https://graph.facebook.com/v21.0/474152522447047/messages";
 const MONGO_URI = "mongodb+srv://pingoo:AwRlQKJJxwTYnP4l@cluster0.tzceu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // MongoDB URI
 const DATABASE_NAME = "whatsappMessages";
 const MESSAGE_COLLECTION = "messages";
@@ -76,6 +76,11 @@ app.post("/webhook", async (req, res) => {
                     await sendMessage(message?.from, 'catalog_offer_test_two')
 
                   }
+                  else if (message?.text?.body && message?.text?.body?.includes('school_start_demo')) {
+
+                    await sendMessage(message?.from, 'school_start_demo')
+
+                  }
 
 
 
@@ -107,6 +112,32 @@ app.post("/webhook", async (req, res) => {
               if (message.type === 'interactive') {
                 await sendMessage(message?.from, 'catalog_offer_test_two')
               }
+
+
+              if (message.type === 'button') {
+                console.log(message?.button)
+
+
+                if (message?.button?.text == 'Book Now') {
+                  sendMessage(message?.from, 'demo_appointment_booking', 'flow')
+                }
+                if (message?.button?.text?.toLowerCase() == 'apply now') {
+                  sendMessage(message?.from, 'school_lead_demo', 'flow')
+                }
+                if (message?.button?.text?.toLowerCase() == 'get support') {
+                  sendMessage(message?.from, 'school_support_demo', 'flow')
+                }
+              }
+
+
+
+
+
+
+
+
+
+
             }
           }
         }
@@ -139,7 +170,7 @@ app.post("/send-message", async (req, res) => {
 
   try {
     const response = await axios.post(
-      `https://graph.facebook.com/v21.0/396871273512965/messages`,
+      `https://graph.facebook.com/v21.0/474152522447047/messages`,
       {
         "messaging_product": "whatsapp",
         "to": phoneNumber,
@@ -222,7 +253,8 @@ connectToDatabase().then(() => {
 
 // ========== send message
 
-async function sendMessage(phoneNumber, template_Name) {
+async function sendMessage(phoneNumber, template_Name, type = 'test') {
+
 
 
   let body = {
@@ -236,6 +268,38 @@ async function sendMessage(phoneNumber, template_Name) {
       }
     }
   }
+
+
+
+
+
+  if (type == 'flow') {
+    body =
+    {
+      "messaging_product": "whatsapp",
+      "recipient_type": "individual",
+      "to": phoneNumber,
+      "type": "template",
+      "template": {
+        "name": template_Name,
+        "language": {
+          "code": "en_US"
+        },
+        "components": [
+          {
+            "type": "button",
+            "sub_type": "flow",
+            "index": "0"
+          }
+
+        ]
+      }
+    }
+  }
+
+
+
+
   if (template_Name == 'select_category') {
     body = {
       "messaging_product": "whatsapp",
@@ -318,6 +382,13 @@ async function sendMessage(phoneNumber, template_Name) {
       }
     }
   }
+
+
+
+
+
+
+
   if (template_Name == 'demo_appointment_booking') {
     body =
     {
@@ -348,7 +419,7 @@ async function sendMessage(phoneNumber, template_Name) {
   try {
 
     const response = await axios.post(
-      `https://graph.facebook.com/v21.0/396871273512965/messages`,
+      `https://graph.facebook.com/v21.0/474152522447047/messages`,
       body,
       {
         headers: {
