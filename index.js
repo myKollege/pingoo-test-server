@@ -114,13 +114,13 @@ app.post("/webhook", async (req, res) => {
 
               if (message?.text?.body && message?.text?.body?.includes('school demo')) {
                 console.log('found', message?.from);
-                await sendMessage(message?.from, 'school_demo2', 'text', "en")
-                return
+                sendMessage(message?.from, 'school_demo2', 'text', "en")
+
               }
 
               if (message.type === 'interactive') {
-                await sendMessage(message?.from, 'thank_you_message')
-                return
+                sendMessage(message?.from, 'thank_you_message')
+
               }
 
               if (message.type === 'button') {
@@ -128,18 +128,18 @@ app.post("/webhook", async (req, res) => {
                 console.log(message?.button?.text)
 
                 if (message?.button?.text == 'Brochure') {
-                  await sendMessage(message?.from, 'school_brochure2')
-                  return
+                  sendMessage(message?.from, 'school_brochure2')
+
                 }
                 if (message?.button?.text == 'Application From') {
                   console.log('here  ++++++++++++++', 'Application From')
-                  await sendMessage(message?.from, 'apply_for_school', 'flow')
-                  return
+                  sendMessage(message?.from, 'apply_for_school', 'flow')
+
                 }
                 if (message?.button?.text == 'Support') {
                   console.log('here  ++++++++++++++', 'Support From')
-                  await sendMessage(message?.from, 'school_support', 'flow')
-                  return
+                  sendMessage(message?.from, 'school_support', 'flow')
+
                 }
               }
 
