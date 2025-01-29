@@ -48,41 +48,39 @@ app.post("/webhook", async (req, res) => {
             for (const message of change.value.messages) {
               console.log("Received message:", message);
 
-              if (message?.type === "text") {
-                // Save messages
-                // try {
+              // if (message?.type === "text") {
+              // Save messages
+              // try {
 
-                //   // if (message?.text?.body && message?.text?.body?.includes('demo_restaurant')) {
-                //   //   console.log('found', message?.from);
-                //   //   await sendMessage(message?.from, 'select_category')
-                //   //   const tableNoMatch = message?.text?.body?.match(/table-(\d+)/);
-                //   //   const tableNo = tableNoMatch ? tableNoMatch[1] : null;
-                //   //   const user = message?.from
+              //   // if (message?.text?.body && message?.text?.body?.includes('demo_restaurant')) {
+              //   //   console.log('found', message?.from);
+              //   //   await sendMessage(message?.from, 'select_category')
+              //   //   const tableNoMatch = message?.text?.body?.match(/table-(\d+)/);
+              //   //   const tableNo = tableNoMatch ? tableNoMatch[1] : null;
+              //   //   const user = message?.from
 
-                //   //   console.log(user, tableNo, 'pppppppp')
+              //   //   console.log(user, tableNo, 'pppppppp')
 
-                //   //   await db.collection(table_COLLECTION).insertOne({ tableNo, user, message: message.text.body });
-                //   //   // await sendMessage(user, 'select_category')
+              //   //   await db.collection(table_COLLECTION).insertOne({ tableNo, user, message: message.text.body });
+              //   //   // await sendMessage(user, 'select_category')
 
-                //   // }
+              //   // }
 
-                //   // else if (message?.text?.body && message?.text?.body?.includes('demo_booking')) {
+              //   // else if (message?.text?.body && message?.text?.body?.includes('demo_booking')) {
 
-                //   //   await sendMessage(message?.from, 'demo_appointment_booking')
+              //   //   await sendMessage(message?.from, 'demo_appointment_booking')
 
-                //   // }
-                //   // else if (message?.text?.body && message?.text?.body?.includes('demo_shop')) {
+              //   // }
+              //   // else if (message?.text?.body && message?.text?.body?.includes('demo_shop')) {
 
-                //   //   await sendMessage(message?.from, 'catalog_offer_test_two')
+              //   //   await sendMessage(message?.from, 'catalog_offer_test_two')
 
-                //   // }
-                //   // else if (message?.text?.body && message?.text?.body?.includes('school_start_demo')) {
+              //   // }
+              //   // else if (message?.text?.body && message?.text?.body?.includes('school_start_demo')) {
 
-                //   //   await sendMessage(message?.from, 'school_start_demo')
+              //   //   await sendMessage(message?.from, 'school_start_demo')
 
-                //   // }
-
-
+              //   // }
 
 
 
@@ -93,12 +91,14 @@ app.post("/webhook", async (req, res) => {
 
 
 
-                //   await db.collection(MESSAGE_COLLECTION).insertOne({ rawMessage: message });
-                //   console.log("Message saved to database:", message);
-                // } catch (error) {
-                //   console.error("Error saving message to database:", error);
-                // }
-              }
+
+
+              //   await db.collection(MESSAGE_COLLECTION).insertOne({ rawMessage: message });
+              //   console.log("Message saved to database:", message);
+              // } catch (error) {
+              //   console.error("Error saving message to database:", error);
+              // }
+              // }
               // if (message.type === "order") {
               //   // Save orders
               //   try {
@@ -110,20 +110,19 @@ app.post("/webhook", async (req, res) => {
               // }
 
 
+              if (message?.type === "text") {
 
+                if (message?.text?.body && message?.text?.body?.includes('school demo')) {
+                  console.log('found', message?.from);
+                  sendMessage(message?.from, 'school_demo2', 'text', "en")
 
-              if (message?.text?.body && message?.text?.body?.includes('school demo')) {
-                console.log('found', message?.from);
-                sendMessage(message?.from, 'school_demo2', 'text', "en")
-
-              }
-
-              if (message.type === 'interactive') {
+                }
+              } else if (message.type === 'interactive') {
                 sendMessage(message?.from, 'thank_you_message')
 
               }
 
-              if (message.type === 'button') {
+              else if (message.type === 'button') {
                 console.log(message?.button)
                 console.log(message?.button?.text)
 
@@ -131,12 +130,12 @@ app.post("/webhook", async (req, res) => {
                   sendMessage(message?.from, 'school_brochure2')
 
                 }
-                if (message?.button?.text == 'Application From') {
+                else if (message?.button?.text == 'Application From') {
                   console.log('here  ++++++++++++++', 'Application From')
                   sendMessage(message?.from, 'apply_for_school', 'flow')
 
                 }
-                if (message?.button?.text == 'Support') {
+                else if (message?.button?.text == 'Support') {
                   console.log('here  ++++++++++++++', 'Support From')
                   sendMessage(message?.from, 'school_support', 'flow')
 
@@ -268,6 +267,11 @@ connectToDatabase().then(() => {
 // ========== send message
 
 async function sendMessage(phoneNumber, template_Name, type = 'text', language = "en_US") {
+
+
+  if (!phoneNumber || !template_Name) {
+    return
+  }
 
 
 
