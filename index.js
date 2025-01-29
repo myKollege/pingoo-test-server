@@ -11,7 +11,7 @@ app.use(cors()); // Enable CORS for all routes
 // Constants
 const PORT = process.env.PORT || 3000;
 const VERIFY_TOKEN = "my-secret-token";
-const ACCESS_TOKEN = "EAAFzFylf8lMBO3NxVBZBVRKJjACCJktPflDJneKNOFgwZCXadYiXfrHATg5LjOorinwNIZCAM5RZBpq3zhY1BfHc4Q7nPt0l2beWr5RsxkkQ8okRTVWEtny74u6yikGsFM9nxSPZBaDXZBtUQZB2QXGBcfCMR9OhBrMjYe1zUZAPIA59RLjZClzSx2VnT7iNIGgNrsx9S6ZC8BiXZA7Smxb4A5XHNnyQmEeHVECjA6ZAZArsCa58ZD";
+const ACCESS_TOKEN = "EAAFzFylf8lMBO1hIzd4oBa7e3XHHAZBJsHEbTbhOX0AXx6srFVZB952fYv0JaaEKm0QTAuqigGdr5XWb5zFGXNZBck3Ud8UyMBXhDgeWKbASR8yPStCqZBg9bP850bHzi9ZCZC9ZAiMsJHytrekILB6du4OBIo4CagdY0HIpUF5YPoWeJZCXuwZCkKQZCHqwjgZC1OolEZBQ7RO0XTbSVDKuk3N2cxFU00YfcMBUUV2Nq3DO5tDzSgZDZD";
 const WHATSAPP_API_URL = "https://graph.facebook.com/v21.0/474152522447047/messages";
 const MONGO_URI = "mongodb+srv://pingoo:AwRlQKJJxwTYnP4l@cluster0.tzceu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // MongoDB URI
 const DATABASE_NAME = "whatsappMessages";
@@ -115,23 +115,31 @@ app.post("/webhook", async (req, res) => {
               if (message?.text?.body && message?.text?.body?.includes('school demo')) {
                 console.log('found', message?.from);
                 await sendMessage(message?.from, 'school_demo2', 'text', "en")
+                return
               }
 
               if (message.type === 'interactive') {
                 await sendMessage(message?.from, 'thank_you_message')
+                return
               }
 
               if (message.type === 'button') {
                 console.log(message?.button)
+                console.log(message?.button?.text)
 
                 if (message?.button?.text == 'Brochure') {
-                  sendMessage(message?.from, 'school_brochure2', 'flow')
+                  await sendMessage(message?.from, 'school_brochure2')
+                  return
                 }
                 if (message?.button?.text?.toLowerCase() == 'Application From') {
-                  sendMessage(message?.from, 'apply_for_school', 'flow')
+                  console.log('here  ++++++++++++++', 'Application From')
+                  await sendMessage(message?.from, 'apply_for_school', 'flow')
+                  return
                 }
                 if (message?.button?.text?.toLowerCase() == 'Support') {
-                  sendMessage(message?.from, 'school_support', 'flow')
+                  console.log('here  ++++++++++++++', 'Support From')
+                  await sendMessage(message?.from, 'school_support', 'flow')
+                  return
                 }
               }
 
@@ -307,7 +315,7 @@ async function sendMessage(phoneNumber, template_Name, type = 'text', language =
   if (template_Name == 'school_brochure2') {
     body = {
       "messaging_product": "whatsapp",
-      "to": "8801318048544",
+      "to": phoneNumber,
       "type": "template",
       "template": {
         "name": "school_brochure2",
@@ -335,7 +343,7 @@ async function sendMessage(phoneNumber, template_Name, type = 'text', language =
 
 
 
-  console.log(body)
+  console.log(body, '[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[')
 
   try {
 
