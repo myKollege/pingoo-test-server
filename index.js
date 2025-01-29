@@ -131,12 +131,12 @@ app.post("/webhook", async (req, res) => {
                   await sendMessage(message?.from, 'school_brochure2')
                   return
                 }
-                if (message?.button?.text?.toLowerCase() == 'Application From') {
+                if (message?.button?.text == 'Application From') {
                   console.log('here  ++++++++++++++', 'Application From')
                   await sendMessage(message?.from, 'apply_for_school', 'flow')
                   return
                 }
-                if (message?.button?.text?.toLowerCase() == 'Support') {
+                if (message?.button?.text == 'Support') {
                   console.log('here  ++++++++++++++', 'Support From')
                   await sendMessage(message?.from, 'school_support', 'flow')
                   return
