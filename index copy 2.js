@@ -109,29 +109,23 @@ app.post("/webhook", async (req, res) => {
               //   }
               // }
 
-
-
-
-              if (message?.text?.body && message?.text?.body?.includes('school demo')) {
-                console.log('found', message?.from);
-                await sendMessage(message?.from, 'school_demo2', 'text', "en")
-              }
-
               if (message.type === 'interactive') {
-                await sendMessage(message?.from, 'thank_you_message')
+                await sendMessage(message?.from, 'catalog_offer_test_two')
               }
+
 
               if (message.type === 'button') {
                 console.log(message?.button)
 
+
                 if (message?.button?.text == 'Brochure') {
-                  sendMessage(message?.from, 'school_brochure2', 'flow')
+                  sendMessage(message?.from, 'demo_appointment_booking', 'flow')
                 }
-                if (message?.button?.text?.toLowerCase() == 'Application From') {
-                  sendMessage(message?.from, 'apply_for_school', 'flow')
+                if (message?.button?.text?.toLowerCase() == 'apply now') {
+                  sendMessage(message?.from, 'school_lead_demo', 'flow')
                 }
-                if (message?.button?.text?.toLowerCase() == 'Support') {
-                  sendMessage(message?.from, 'school_support', 'flow')
+                if (message?.button?.text?.toLowerCase() == 'get support') {
+                  sendMessage(message?.from, 'school_support_demo', 'flow')
                 }
               }
 
@@ -259,7 +253,7 @@ connectToDatabase().then(() => {
 
 // ========== send message
 
-async function sendMessage(phoneNumber, template_Name, type = 'text', language = "en_US") {
+async function sendMessage(phoneNumber, template_Name, type = 'text') {
 
 
 
@@ -270,7 +264,7 @@ async function sendMessage(phoneNumber, template_Name, type = 'text', language =
     "template": {
       "name": template_Name,
       "language": {
-        "code": language
+        "code": "en_US"
       }
     }
   }
@@ -304,34 +298,120 @@ async function sendMessage(phoneNumber, template_Name, type = 'text', language =
   }
 
 
-  if (template_Name == 'school_brochure2') {
+
+
+  if (template_Name == 'select_category') {
     body = {
       "messaging_product": "whatsapp",
-      "to": "8801318048544",
+      "recipient_type": "individual",
+      "to": phoneNumber,
       "type": "template",
       "template": {
-        "name": "school_brochure2",
+        "name": "select_category",
         "language": {
           "code": "en_US"
-        }
-      },
-      "components": [
-        {
-          "type": "BUTTONS",
-          "buttons": [
-            {
-              "type": "URL",
-              "text": "Download Brochure",
-              "url": "https://drive.google.com/file/d/10zzA2bRWozpKUgZNCcXMD_MbRTt07BCd/view"
-            }
-          ]
-        }
-      ]
+        },
+        "components": [
+          {
+            "type": "header",
+            "parameters": [
+              {
+                "type": "image",
+                "image": {
+                  "link": "https://images.unsplash.com/photo-1583623025817-d180a2221d0a?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                }
+              }
+            ]
+          },
+
+          {
+            "type": "button",
+            "sub_type": "flow",
+            "index": "0"
+          }
+
+        ]
+      }
+    }
+  }
+  if (template_Name == 'catalog_offer_test_two') {
+    body =
+    {
+      "messaging_product": "whatsapp",
+      "recipient_type": "individual",
+      "to": phoneNumber,
+      "type": "template",
+      "template": {
+        "name": "catalog_offer_test_two",
+        "language": {
+          "code": "en_US"
+        },
+        "components": [
+          /* Body component required if template uses variables, otherwise omit */
+          {
+            "type": "body",
+            "parameters": [
+              {
+                "type": "text",
+                "text": "100"
+              },
+              {
+                "type": "text",
+                "text": "400"
+              },
+              {
+                "type": "text",
+                "text": "3"
+              }
+            ]
+          },
+          {
+            "type": "button",
+            "sub_type": "CATALOG",
+            "index": 0,
+            "parameters": [
+              {
+                "type": "action",
+                "action": {
+                  "thumbnail_product_retailer_id": "6xjumexzvm"
+                }
+              }
+            ]
+          }
+        ]
+      }
     }
   }
 
 
 
+
+
+
+
+  if (template_Name == 'demo_appointment_booking') {
+    body =
+    {
+      "messaging_product": "whatsapp",
+      "recipient_type": "individual",
+      "to": phoneNumber,
+      "type": "template",
+      "template": {
+        "name": "demo_appointment_booking",
+        "language": {
+          "code": "en_US"
+        },
+        "components": [
+          {
+            "type": "button",
+            "sub_type": "flow",
+            "index": "0"
+          }
+
+        ]
+      }
+    }
+  }
 
 
 
