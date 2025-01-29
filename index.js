@@ -335,11 +335,12 @@ async function sendMessage(phoneNumber, template_Name, type = 'text', language =
 
 
 
+  console.log(body)
 
   try {
 
     const response = await axios.post(
-      `https://graph.facebook.com/v21.0/474152522447047/messages`,
+      `https://graph.facebook.com/v21.0/396871273512965/messages`,
       body,
       {
         headers: {
@@ -348,6 +349,9 @@ async function sendMessage(phoneNumber, template_Name, type = 'text', language =
         },
       }
     );
+
+    const result = await response.json()
+    console.log(result, '|||||||||||||||||||||||||||||||')
 
 
   }
