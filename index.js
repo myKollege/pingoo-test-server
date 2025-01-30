@@ -11,7 +11,7 @@ app.use(cors()); // Enable CORS for all routes
 // Constants
 const PORT = process.env.PORT || 3000;
 const VERIFY_TOKEN = "my-secret-token";
-const ACCESS_TOKEN = "EAAFzFylf8lMBO1hIzd4oBa7e3XHHAZBJsHEbTbhOX0AXx6srFVZB952fYv0JaaEKm0QTAuqigGdr5XWb5zFGXNZBck3Ud8UyMBXhDgeWKbASR8yPStCqZBg9bP850bHzi9ZCZC9ZAiMsJHytrekILB6du4OBIo4CagdY0HIpUF5YPoWeJZCXuwZCkKQZCHqwjgZC1OolEZBQ7RO0XTbSVDKuk3N2cxFU00YfcMBUUV2Nq3DO5tDzSgZDZD";
+const ACCESS_TOKEN = "EAAFzFylf8lMBO97iMEbv1J1MZCQ3kkR2qrP9YdSqMW7upXJGrY4Neg9bG1SgSBBG5zfFROoaZB1PC7sHvkuM5WzP42cZAaxXdt5eZCRb5ipZCn0lV9bFKo2sYxAFvPt3Tn3oldCbQS18tMPO8Qpxu76GQOrd6Obz01VUWg6jwvjZCKfUIj2TCV1ufLdWjp7WtMMk4Q9SX1z2nzZCZBHSqSVT705p2vuCKoRCtQ9mIyTTeuQZD";
 const WHATSAPP_API_URL = "https://graph.facebook.com/v21.0/474152522447047/messages";
 const MONGO_URI = "mongodb+srv://pingoo:AwRlQKJJxwTYnP4l@cluster0.tzceu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // MongoDB URI
 const DATABASE_NAME = "whatsappMessages";
@@ -118,7 +118,7 @@ app.post("/webhook", async (req, res) => {
 
                 }
               } else if (message.type === 'interactive') {
-                sendMessage(message?.from, 'thank_you_message')
+                await sendMessage(message?.from, 'thank_you_message')
 
               }
 
@@ -127,17 +127,17 @@ app.post("/webhook", async (req, res) => {
                 console.log(message?.button?.text)
 
                 if (message?.button?.text == 'Brochure') {
-                  sendMessage(message?.from, 'school_brochure2')
+                  await sendMessage(message?.from, 'school_brochure2')
 
                 }
                 else if (message?.button?.text == 'Application From') {
                   console.log('here  ++++++++++++++', 'Application From')
-                  sendMessage(message?.from, 'apply_for_school', 'flow')
+                  await sendMessage(message?.from, 'apply_for_school', 'flow')
 
                 }
                 else if (message?.button?.text == 'Support') {
                   console.log('here  ++++++++++++++', 'Support From')
-                  sendMessage(message?.from, 'school_support', 'flow')
+                  await sendMessage(message?.from, 'school_support', 'flow')
 
                 }
               }
