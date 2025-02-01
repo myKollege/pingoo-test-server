@@ -179,6 +179,8 @@ app.get("/webhook", (req, res) => {
 app.post("/pinggo-webhook", async (req, res) => {
   const body = req.body;
 
+  console.log(body, 'pppppppppppppp')
+
   // if (body.object === "whatsapp_business_account") {
   //   try {
   //     for (const entry of body.entry) {
