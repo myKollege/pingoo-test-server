@@ -176,6 +176,149 @@ app.get("/webhook", (req, res) => {
     res.sendStatus(403);
   }
 });
+app.post("/pinggo-webhook", async (req, res) => {
+  const body = req.body;
+
+  // if (body.object === "whatsapp_business_account") {
+  //   try {
+  //     for (const entry of body.entry) {
+  //       for (const change of entry.changes) {
+  //         if (change.value && change.value.messages) {
+  //           for (const message of change.value.messages) {
+  //             console.log("Received message:", message);
+
+  //             // if (message?.type === "text") {
+  //             // Save messages
+  //             // try {
+
+  //             //   // if (message?.text?.body && message?.text?.body?.includes('demo_restaurant')) {
+  //             //   //   console.log('found', message?.from);
+  //             //   //   await sendMessage(message?.from, 'select_category')
+  //             //   //   const tableNoMatch = message?.text?.body?.match(/table-(\d+)/);
+  //             //   //   const tableNo = tableNoMatch ? tableNoMatch[1] : null;
+  //             //   //   const user = message?.from
+
+  //             //   //   console.log(user, tableNo, 'pppppppp')
+
+  //             //   //   await db.collection(table_COLLECTION).insertOne({ tableNo, user, message: message.text.body });
+  //             //   //   // await sendMessage(user, 'select_category')
+
+  //             //   // }
+
+  //             //   // else if (message?.text?.body && message?.text?.body?.includes('demo_booking')) {
+
+  //             //   //   await sendMessage(message?.from, 'demo_appointment_booking')
+
+  //             //   // }
+  //             //   // else if (message?.text?.body && message?.text?.body?.includes('demo_shop')) {
+
+  //             //   //   await sendMessage(message?.from, 'catalog_offer_test_two')
+
+  //             //   // }
+  //             //   // else if (message?.text?.body && message?.text?.body?.includes('school_start_demo')) {
+
+  //             //   //   await sendMessage(message?.from, 'school_start_demo')
+
+  //             //   // }
+
+
+
+
+
+
+
+
+
+
+
+
+  //             //   await db.collection(MESSAGE_COLLECTION).insertOne({ rawMessage: message });
+  //             //   console.log("Message saved to database:", message);
+  //             // } catch (error) {
+  //             //   console.error("Error saving message to database:", error);
+  //             // }
+  //             // }
+  //             // if (message.type === "order") {
+  //             //   // Save orders
+  //             //   try {
+  //             //     await db.collection(ORDER_COLLECTION).insertOne({ rawOrder: message });
+  //             //     console.log("Order saved to database:", message);
+  //             //   } catch (error) {
+  //             //     console.error("Error saving order to database:", error);
+  //             //   }
+  //             // }
+
+
+  //             if (message?.type === "text") {
+
+  //               if (message?.text?.body && message?.text?.body?.includes('school demo')) {
+  //                 console.log('found', message?.from);
+  //                 sendMessage(message?.from, 'school_demo2', 'text', "en")
+
+  //               }
+  //             } else if (message.type === 'interactive') {
+  //               await sendMessage(message?.from, 'thank_you_message')
+
+  //             }
+
+  //             else if (message.type === 'button') {
+  //               console.log(message?.button)
+  //               console.log(message?.button?.text)
+
+  //               if (message?.button?.text == 'Brochure') {
+  //                 await sendMessage(message?.from, 'school_brochure2')
+
+  //               }
+  //               else if (message?.button?.text == 'Application From') {
+  //                 console.log('here  ++++++++++++++', 'Application From')
+  //                 await sendMessage(message?.from, 'apply_for_school', 'flow')
+
+  //               }
+  //               else if (message?.button?.text == 'Support') {
+  //                 console.log('here  ++++++++++++++', 'Support From')
+  //                 await sendMessage(message?.from, 'school_support', 'flow')
+
+  //               }
+  //             }
+
+
+
+
+
+
+
+
+
+
+  //           }
+  //         }
+  //       }
+  //     }
+  //     res.sendStatus(200);
+  //   } catch (error) {
+  //     console.error("Error processing webhook:", error);
+  //     res.sendStatus(500);
+  //   }
+
+
+  // } else {
+  //   res.sendStatus(404);
+  // }
+
+  res.sendStatus(200);
+});
+// Verification endpoint for webhook setup
+app.get("/webhook", (req, res) => {
+  const mode = req.query["hub.mode"];
+  const token = req.query["hub.verify_token"];
+  const challenge = req.query["hub.challenge"];
+
+  if (mode === "subscribe" && token === VERIFY_TOKEN) {
+    res.status(200).send(challenge);
+  } else {
+    res.sendStatus(403);
+  }
+});
 
 // Endpoint to send messages
 app.post("/send-message", async (req, res) => {
