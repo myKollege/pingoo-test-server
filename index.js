@@ -655,7 +655,7 @@ const decryptRequest = (body, privateKey) => {
     {
       key: crypto.createPrivateKey({
         key: privateKey,
-        passphrase: "129400", // Add passphrase here
+        passphrase: "g746fXi|!5b9<735", // Add passphrase here
       }),
       padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
       oaepHash: "sha256",
