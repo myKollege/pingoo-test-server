@@ -473,15 +473,8 @@ const SCREEN_RESPONSES = {
         {
           "id": "11:30",
           "title": "11:30"
-        },
-        {
-          "id": "12:30",
-          "title": "12:30"
-        },
-        {
-          "id": "01:30",
-          "title": "01:30"
         }
+
       ],
       is_time_enabled: true,
     }
