@@ -497,20 +497,7 @@ const SCREEN_RESPONSES = {
           id: "10:30",
           title: "10:30",
         },
-        {
-          id: "11:00",
-          title: "11:00",
-          enabled: false,
-        },
-        {
-          id: "11:30",
-          title: "11:30",
-        },
-        {
-          id: "12:00",
-          title: "12:00",
-          enabled: false,
-        },
+
         {
           id: "12:30",
           title: "12:30",
@@ -655,7 +642,7 @@ const decryptRequest = (body, privateKey) => {
     {
       key: crypto.createPrivateKey({
         key: privateKey,
-        passphrase: "g746fXi|!5b9<735", // Add passphrase here
+        passphrase: "129400", // Add passphrase here
       }),
       padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
       oaepHash: "sha256",
