@@ -438,86 +438,53 @@ const SCREEN_RESPONSES = {
     data: {
       department: [
         {
-          id: "shopping",
-          title: "Shopping & Groceries",
+          "id": "Cardiology",
+          "title": "Cardiology"
         },
         {
-          id: "clothing",
-          title: "Clothing & Apparel",
-        },
-        {
-          id: "home",
-          title: "Home Goods & Decor",
-        },
-        {
-          id: "electronics",
-          title: "Electronics & Appliances",
-        },
-        {
-          id: "beauty",
-          title: "Beauty & Personal Care",
-        },
+          "id": "Neurology",
+          "title": "Neurology"
+        }
       ],
       location: [
         {
-          id: "1",
-          title: "King\u2019s Cross, London",
+          "id": "1",
+          "title": "King’s Cross, London"
         },
         {
-          id: "2",
-          title: "Oxford Street, London",
-        },
-        {
-          id: "3",
-          title: "Covent Garden, London",
-        },
-        {
-          id: "4",
-          title: "Piccadilly Circus, London",
-        },
+          "id": "2",
+          "title": "Oxford Street, London"
+        }
+
       ],
       is_location_enabled: true,
       date: [
         {
-          id: "2024-01-01",
-          title: "Mon Jan 01 2024",
-        },
-        {
-          id: "2024-01-02",
-          title: "Tue Jan 02 2024",
-        },
-        {
-          id: "2024-01-03",
-          title: "Wed Jan 03 2024",
-        },
+          "id": "2022-02-28",
+          "title": "Mon Feb 28 2025"
+        }
       ],
       is_date_enabled: true,
       time: [
         {
-          id: "01:30",
-          title: "10:30",
+          "id": "10:30",
+          "title": "10:30"
         },
         {
-          id: "02:00",
-          title: "11:00",
-          enabled: false,
+          "id": "11:30",
+          "title": "11:30"
         },
         {
-          id: "02:30",
-          title: "11:30",
+          "id": "12:30",
+          "title": "12:30"
         },
         {
-          id: "03:00",
-          title: "12:00",
-          enabled: false,
-        },
-        {
-          id: "12:30",
-          title: "12:30",
-        },
+          "id": "01:30",
+          "title": "01:30"
+        }
       ],
       is_time_enabled: true,
-    },
+    }
   },
   DETAILS: {
     screen: "DETAILS",
