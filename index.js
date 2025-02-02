@@ -238,7 +238,7 @@ app.post("/pinggo-webhook", async (req, res) => {
             console.log(messages?.value?.messages, 'messages ============= |||||||||||||');
             console.log(messages?.value?.messages[0], 'messages  0 ============= |||||||||||||');
             console.log(messages?.value?.metadata[0], 'metadata  0 ============= |||||||||||||');
-            console.log(messages?.value?.contacts[0], 'contacts  0 ============= |||||||||||||');
+            console.log(messages?.value?.metadata, 'metadata   ============= |||||||||||||');
           }
         }
       }
@@ -382,11 +382,11 @@ const SCREEN_RESPONSES = {
         {
           "id": "10:30",
           "title": "10:30"
-        },
-        {
-          "id": "11:30",
-          "title": "11:30"
         }
+        // {
+        //   "id": "11:30",
+        //   "title": "11:30"
+        // }
 
       ],
       is_time_enabled: true,
