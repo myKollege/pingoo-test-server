@@ -237,6 +237,8 @@ app.post("/pinggo-webhook", async (req, res) => {
             const messages = dataArray[j];
             console.log(messages?.value?.messages, 'messages ============= |||||||||||||');
             console.log(messages?.value?.messages[0], 'messages  0 ============= |||||||||||||');
+            console.log(messages?.value?.metadata[0], 'metadata  0 ============= |||||||||||||');
+            console.log(messages?.value?.contacts[0], 'contacts  0 ============= |||||||||||||');
           }
         }
       }
