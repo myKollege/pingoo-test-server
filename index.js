@@ -233,18 +233,26 @@ app.post("/pinggo-webhook", async (req, res) => {
         if (Array.isArray(dataArray)) {
           for (let j = 0; j < dataArray.length; j++) {
             const messages = dataArray[j];
-            console.log(messages?.value?.messages[0], 'messages  0 ============= |||||||||||||');
+
 
             const data = messages?.value?.messages[0]
-            let from = data.from;
-            let interactive_response_json = data.interactive.nfm_reply.response_json;
+            console.log(data, 'messages  0 ============= |||||||||||||');
 
-            let name = interactive_response_json?.data?.name
-            let email = interactive_response_json?.data?.email
-            let phone = interactive_response_json?.data?.phone
-            let time = interactive_response_json?.data?.time
-            let date = interactive_response_json?.data?.date
-            let location = interactive_response_json?.data?.location
+            let from = data.from;
+            let interactive = data.interactive.nfm_reply
+            console.log(interactive, 'interactive ============= |||||||||||||');
+
+            let interactive_response_json = data.interactive.nfm_reply.response_json;
+            console.log(interactive_response_json, 'interactive_response_json  0 ============= |||||||||||||');
+            let parsedResponse = JSON.parse(data.interactive.nfm_reply.response_json);
+            console.log(parsedResponse, 'parsedResponse** ============= |||||||||||||');
+
+            let name = parsedResponse?.data?.name
+            let email = parsedResponse?.data?.email
+            let phone = parsedResponse?.data?.phone
+            let time = parsedResponse?.data?.time
+            let date = parsedResponse?.data?.date
+            let location = parsedResponse?.data?.location
 
             console.log(name, email, phone, time, date, location)
 
