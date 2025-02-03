@@ -221,8 +221,6 @@ app.post("/pinggo-webhook", async (req, res) => {
   const timestamp = body?.timestamp;
   const message_entryArray = body?.message_entry;
 
-  console.log(senderNumber, 'senderNumber');
-  console.log(message_type, 'message_type');  // Removed duplicate log
 
   if (message_type === 'interactive') {
     console.log('interactive');
@@ -232,15 +230,35 @@ app.post("/pinggo-webhook", async (req, res) => {
         const element = message_entryArray[i];
         const dataArray = element?.changes;
 
-        console.log(dataArray, 'dataArray');
-
         if (Array.isArray(dataArray)) {
           for (let j = 0; j < dataArray.length; j++) {
             const messages = dataArray[j];
-            console.log(messages?.value?.messages, 'messages ============= |||||||||||||');
             console.log(messages?.value?.messages[0], 'messages  0 ============= |||||||||||||');
-            console.log(messages?.value?.metadata[0], 'metadata  0 ============= |||||||||||||');
-            console.log(messages?.value?.metadata, 'metadata   ============= |||||||||||||');
+
+            const data = messages?.value?.messages[0]
+            let from = data.from;
+            let interactive_response_json = data.interactive.nfm_reply.response_json;
+
+            let name = interactive_response_json?.data?.name
+            let email = interactive_response_json?.data?.email
+            let phone = interactive_response_json?.data?.phone
+            let time = interactive_response_json?.data?.time
+            let date = interactive_response_json?.data?.date
+            let location = interactive_response_json?.data?.location
+
+            console.log(name, email, phone, time, date, location)
+
+
+
+            const result = await db.collection(FLOW_SCREEN_COLLECTION).updateOne(
+              { senderNumber },
+              { $set: { name, email, phone, time, date, location } },
+              { upsert: true }
+            );
+
+            console.log(result, '[[[[[[[[[[[[[[[[[[[[[')
+
+
           }
         }
       }
@@ -526,6 +544,149 @@ const SCREEN_RESPONSES = {
   },
 };
 
+
+
+
+
+async function handleScreenFlowJson() {
+  const booked = await db.collection(FLOW_SCREEN_COLLECTION).find().toArray();
+
+  let schedules = [
+    {
+      "id": "10:30",
+      "title": "10:30"
+    },
+    {
+      "id": "11:30",
+      "title": "11:30"
+    },
+    {
+      "id": "12:30",
+      "title": "12:30"
+    },
+    {
+      "id": "01:30",
+      "title": "01:30"
+    },
+    {
+      "id": "02:30",
+      "title": "02:30"
+    },
+  ]
+
+
+  let bookedTimes = new Set(booked.map(b => b.time.replace('.', ':')));
+
+  let availableSchedules = []
+
+
+
+  if (bookedTimes) {
+    availableSchedules = schedules.filter(schedule => !bookedTimes.has(schedule.id));
+  } else {
+    availableSchedules = schedules
+  }
+
+
+
+
+
+
+
+
+
+
+
+  const SCREEN_RESPONSES = {
+    APPOINTMENT: {
+      screen: "APPOINTMENT",
+      data: {
+        department: [
+          {
+            "id": "Cardiology",
+            "title": "Cardiology"
+          },
+          {
+            "id": "Neurology",
+            "title": "Neurology"
+          }
+        ],
+        location: [
+          {
+            "id": "1",
+            "title": "King’s Cross, London"
+          },
+          {
+            "id": "2",
+            "title": "Oxford Street, London"
+          }
+
+        ],
+        is_location_enabled: true,
+        date: [
+          {
+            "id": "2022-02-28",
+            "title": "Mon Feb 28 2025"
+          }
+        ],
+        is_date_enabled: true,
+        time: availableSchedules,
+        is_time_enabled: true,
+      }
+    },
+    DETAILS: {
+      screen: "DETAILS",
+      data: {
+        department: "beauty",
+        location: "1",
+        date: "2024-01-01",
+        time: "11:30",
+      },
+    },
+    SUMMARY: {
+      screen: "SUMMARY",
+      data: {
+        appointment:
+          "Beauty & Personal Care Department at Kings Cross, London\nMon Jan 01 2024 at 11:30.",
+        details:
+          "Name: John Doe\nEmail: john@example.com\nPhone: 123456789\n\nA free skin care consultation, please",
+        department: "beauty",
+        location: "1",
+        date: "2024-01-01",
+        time: "11:30",
+        name: "John Doe",
+        email: "john@example.com",
+        phone: "123456789",
+        more_details: "A free skin care consultation, please",
+      },
+    },
+    TERMS: {
+      screen: "TERMS",
+      data: {},
+    },
+    SUCCESS: {
+      screen: "SUCCESS",
+      data: {
+        extension_message_response: {
+          params: {
+            flow_token: "REPLACE_FLOW_TOKEN",
+            some_param_name: "PASS_CUSTOM_VALUE",
+          },
+        },
+      },
+    },
+  };
+
+
+  return SCREEN_RESPONSES
+
+
+}
+
+
+
+
+
 const getNextScreen = async (decryptedBody) => {
   const { screen, data, version, action, flow_token } = decryptedBody;
 
@@ -537,6 +698,9 @@ const getNextScreen = async (decryptedBody) => {
     console.warn("Received client error:", data);
     return { data: { acknowledged: true } };
   }
+
+
+  let SCREEN_RESPONSES = await handleScreenFlowJson()
 
   if (action === "INIT") {
     return {
