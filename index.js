@@ -345,6 +345,95 @@ app.get("/tables", async (req, res) => {
 
 
 
+// const SCREEN_RESPONSES = {
+//   APPOINTMENT: {
+//     screen: "APPOINTMENT",
+//     data: {
+//       department: [
+//         {
+//           "id": "Cardiology",
+//           "title": "Cardiology"
+//         },
+//         {
+//           "id": "Neurology",
+//           "title": "Neurology"
+//         }
+//       ],
+//       location: [
+//         {
+//           "id": "1",
+//           "title": "King’s Cross, London"
+//         },
+//         {
+//           "id": "2",
+//           "title": "Oxford Street, London"
+//         }
+
+//       ],
+//       is_location_enabled: true,
+//       date: [
+//         {
+//           "id": "2022-02-28",
+//           "title": "Mon Feb 28 2025"
+//         }
+//       ],
+//       is_date_enabled: true,
+//       time: [
+//         {
+//           "id": "10:30",
+//           "title": "10:30"
+//         }
+//         // {
+//         //   "id": "11:30",
+//         //   "title": "11:30"
+//         // }
+
+//       ],
+//       is_time_enabled: true,
+//     }
+//   },
+//   DETAILS: {
+//     screen: "DETAILS",
+//     data: {
+//       department: "beauty",
+//       location: "1",
+//       date: "2024-01-01",
+//       time: "11:30",
+//     },
+//   },
+//   SUMMARY: {
+//     screen: "SUMMARY",
+//     data: {
+//       appointment:
+//         "Beauty & Personal Care Department at Kings Cross, London\nMon Jan 01 2024 at 11:30.",
+//       details:
+//         "Name: John Doe\nEmail: john@example.com\nPhone: 123456789\n\nA free skin care consultation, please",
+//       department: "beauty",
+//       location: "1",
+//       date: "2024-01-01",
+//       time: "11:30",
+//       name: "John Doe",
+//       email: "john@example.com",
+//       phone: "123456789",
+//       more_details: "A free skin care consultation, please",
+//     },
+//   },
+//   TERMS: {
+//     screen: "TERMS",
+//     data: {},
+//   },
+//   SUCCESS: {
+//     screen: "SUCCESS",
+//     data: {
+//       extension_message_response: {
+//         params: {
+//           flow_token: "REPLACE_FLOW_TOKEN",
+//           some_param_name: "PASS_CUSTOM_VALUE",
+//         },
+//       },
+//     },
+//   },
+// };
 const SCREEN_RESPONSES = {
   APPOINTMENT: {
     screen: "APPOINTMENT",
@@ -382,11 +471,11 @@ const SCREEN_RESPONSES = {
         {
           "id": "10:30",
           "title": "10:30"
+        },
+        {
+          "id": "11:30",
+          "title": "11:30"
         }
-        // {
-        //   "id": "11:30",
-        //   "title": "11:30"
-        // }
 
       ],
       is_time_enabled: true,
@@ -433,7 +522,7 @@ const SCREEN_RESPONSES = {
       },
     },
   },
-};;
+};
 
 const getNextScreen = async (decryptedBody) => {
   const { screen, data, version, action, flow_token } = decryptedBody;
@@ -507,6 +596,9 @@ const getNextScreen = async (decryptedBody) => {
             extension_message_response: {
               params: {
                 flow_token,
+                location: SCREEN_RESPONSES.APPOINTMENT.data.location.slice(0, 3),
+                date: SCREEN_RESPONSES.APPOINTMENT.data.date.slice(0, 3),
+                time: SCREEN_RESPONSES.APPOINTMENT.data.time.slice(0, 3),
               },
             },
           },
