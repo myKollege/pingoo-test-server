@@ -778,9 +778,9 @@ const getNextScreen = async (decryptedBody) => {
               Boolean(data.department) &&
               Boolean(data.location) &&
               Boolean(data.date),
-            location: SCREEN_RESPONSES.APPOINTMENT.data.location.slice(0, 3),
-            date: SCREEN_RESPONSES.APPOINTMENT.data.date.slice(0, 3),
-            time: SCREEN_RESPONSES.APPOINTMENT.data.time.slice(0, 3),
+            location: SCREEN_RESPONSES.APPOINTMENT.data.location,
+            date: SCREEN_RESPONSES.APPOINTMENT.data.date,
+            time: SCREEN_RESPONSES.APPOINTMENT.data.time,
           },
         };
 
