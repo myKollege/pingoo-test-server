@@ -222,6 +222,20 @@ app.post("/pinggo-webhook", async (req, res) => {
   const message_entryArray = body?.message_entry;
 
 
+
+  if (message?.type === "text") {
+
+    if (message?.text?.body && message?.text?.body?.includes('doctor demo')) {
+      console.log('found', message?.from);
+      sendMessage(message?.from, 'doctor_demo_one', 'flow')
+    }
+  }
+
+  // else if (message.type === 'interactive') {
+  //   await sendMessage(message?.from, 'doctor_demo_one')
+  // }
+
+
   if (message_type === 'interactive') {
     console.log('interactive');
 
@@ -994,6 +1008,7 @@ async function sendMessage(phoneNumber, template_Name, type = 'text', language =
 
 
 
+
   if (type == 'flow') {
     body =
     {
@@ -1046,6 +1061,71 @@ async function sendMessage(phoneNumber, template_Name, type = 'text', language =
   }
 
 
+  if (template_Name == 'doctor_demo_one') {
+    let body = {
+      "messaging_product": "whatsapp",
+      "recipient_type": "individual",
+      "to": phoneNumber,
+      "type": "template",
+      "template": {
+        "name": "doctor_demo_one",
+        "language": {
+          "code": "en_US"
+        },
+        "components": [
+          {
+            "type": "button",
+            "sub_type": "flow",
+            "index": "0",
+            "parameters": [
+              {
+                "type": "action",
+                "action": {
+                  "flow_token": "FLOW_TOKEN",
+                  "flow_action_data": {
+                    "department": [
+                      {
+                        "id": "Cardiology",
+                        "title": "Cardiology"
+                      },
+                      {
+                        "id": "Neurology",
+                        "title": "Neurology"
+                      }
+                    ],
+                    "location": [
+                      {
+                        "id": "1",
+                        "title": "King’s Cross, London"
+                      },
+                      {
+                        "id": "2",
+                        "title": "Oxford Street, London"
+                      }
+                    ],
+                    "date": [
+                      {
+                        "id": "2022-02-28",
+                        "title": "Mon Feb 28 2025"
+                      }
+                    ],
+                    "time": [
+                      {
+                        "id": "10:30",
+                        "title": "10:30"
+                      }
+
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+
+  }
 
 
 
