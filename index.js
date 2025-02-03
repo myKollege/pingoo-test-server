@@ -223,13 +223,13 @@ app.post("/pinggo-webhook", async (req, res) => {
 
 
 
-  if (message?.type === "text") {
+  // if (message?.type === "text") {
 
-    if (message?.text?.body && message?.text?.body?.includes('doctor demo')) {
-      console.log('found', message?.from);
-      sendMessage(message?.from, 'doctor_demo_one', 'flow')
-    }
-  }
+  //   if (message?.text?.body && message?.text?.body?.includes('doctor demo')) {
+  //     console.log('found', message?.from);
+  //     sendMessage(message?.from, 'doctor_demo_one', 'flow')
+  //   }
+  // }
 
   // else if (message.type === 'interactive') {
   //   await sendMessage(message?.from, 'doctor_demo_one')
