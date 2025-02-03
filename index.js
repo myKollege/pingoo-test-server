@@ -384,10 +384,32 @@ app.get("/appointments", async (req, res) => {
 });
 
 
+app.delete("/appointments_all", async (req, res) => {
+  try {
+    const result = await db.collection(BOOKED_APPOINTMENTS).deleteMany({});
+    res.status(200).json({ message: "All appointments deleted successfully", deletedCount: result.deletedCount });
+  } catch (error) {
+    console.error("Error deleting appointments:", error);
+    res.status(500).json({ error: "Failed to delete appointments" });
+  }
+});
 
 
+app.delete("/appointments/:id", async (req, res) => {
+  try {
+    const appointmentId = req.params.id; // Get ID from URL params
+    const result = await db.collection(BOOKED_APPOINTMENTS).deleteOne({ _id: new ObjectId(appointmentId) });
 
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: "Appointment not found" });
+    }
 
+    res.status(200).json({ message: "Appointment deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting appointment:", error);
+    res.status(500).json({ error: "Failed to delete appointment" });
+  }
+});
 
 
 // =========================== set up flow endpoint  ==================================================================
