@@ -20,6 +20,8 @@ const DATABASE_NAME = "whatsappMessages";
 const MESSAGE_COLLECTION = "messages";
 const ORDER_COLLECTION = "orders";
 const table_COLLECTION = "table";
+const FLOW_SCREEN_COLLECTION = 'userFlow'
+const BOOKED_APPOINTMENTS = 'appointments'
 const PRIVATE_KEY = `-----BEGIN ENCRYPTED PRIVATE KEY-----
 MIIFJDBWBgkqhkiG9w0BBQ0wSTAxBgkqhkiG9w0BBQwwJAQQmrwByERyo87P639V
 YSRC+wICCAAwDAYIKoZIhvcNAgkFADAUBggqhkiG9w0DBwQIu0qdlOt4SRMEggTI
@@ -93,7 +95,7 @@ app.post("/webhook", async (req, res) => {
 
               //   //   console.log(user, tableNo, 'pppppppp')
 
-              //   //   await db.collection(table_COLLECTION).insertOne({ tableNo, user, message: message.text.body });
+              //   //   await db.collection(FLOW_SCREEN_COLLECTION).insertOne({ tableNo, user, message: message.text.body });
               //   //   // await sendMessage(user, 'select_category')
 
               //   // }
@@ -596,9 +598,8 @@ const getNextScreen = async (decryptedBody) => {
             extension_message_response: {
               params: {
                 flow_token,
-                location: SCREEN_RESPONSES.APPOINTMENT.data.location.slice(0, 3),
-                date: SCREEN_RESPONSES.APPOINTMENT.data.date.slice(0, 3),
-                time: SCREEN_RESPONSES.APPOINTMENT.data.time.slice(0, 3),
+                data
+
               },
             },
           },
@@ -708,7 +709,56 @@ app.get("/health", (req, res) => {
 
 
 
+// Save or update data
+app.post('/save-flow', async (req, res) => {
+  try {
+    const { tableNo, user, message } = req.body;
+    if (!tableNo || !user || !message) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
 
+    const result = await db.collection(FLOW_SCREEN_COLLECTION).updateOne(
+      { tableNo },
+      { $set: { user, message } },
+      { upsert: true }
+    );
+
+    res.json({ success: true, result });
+  } catch (error) {
+    console.error('Error saving data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+app.post('/save-appointment', async (req, res) => {
+  try {
+    const { mobile, date, time, location, department } = req.body;
+    if (!tableNo || !user || !message) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const result = await db.collection(FLOW_SCREEN_COLLECTION).updateOne(
+      { mobile },
+      { $set: { date, time, location, department } },
+      { upsert: true }
+    );
+
+    res.json({ success: true, result });
+  } catch (error) {
+    console.error('Error saving data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Get all data
+app.get('/get-flow-json', async (req, res) => {
+  try {
+    const data = await db.collection(FLOW_SCREEN_COLLECTION).find().toArray();
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 
 
