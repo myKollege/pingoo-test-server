@@ -258,7 +258,7 @@ app.post("/pinggo-webhook", async (req, res) => {
 
 
 
-            const result = await db.collection(FLOW_SCREEN_COLLECTION).updateOne(
+            const result = await db.collection(BOOKED_APPOINTMENTS).updateOne(
               { senderNumber },
               { $set: { name, email, phone, time, date, location } },
               { upsert: true }
@@ -557,7 +557,7 @@ const SCREEN_RESPONSES = {
 
 
 async function handleScreenFlowJson() {
-  const booked = await db.collection(FLOW_SCREEN_COLLECTION).find().toArray();
+  const booked = await db.collection(BOOKED_APPOINTMENTS).find().toArray();
 
   let schedules = [
     {
