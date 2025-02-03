@@ -231,9 +231,7 @@ app.post("/pinggo-webhook", async (req, res) => {
   //   }
   // }
 
-  // else if (message.type === 'interactive') {
-  //   await sendMessage(message?.from, 'doctor_demo_one')
-  // }
+
 
 
   if (message_type === 'interactive') {
@@ -369,6 +367,15 @@ app.get("/orders", async (req, res) => {
 app.get("/tables", async (req, res) => {
   try {
     const orders = await db.collection(table_COLLECTION).find().toArray();
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    res.status(500).json({ error: "Failed to fetch orders" });
+  }
+});
+app.get("/appointments", async (req, res) => {
+  try {
+    const orders = await db.collection(BOOKED_APPOINTMENTS).find().toArray();
     res.status(200).json(orders);
   } catch (error) {
     console.error("Error fetching orders:", error);
