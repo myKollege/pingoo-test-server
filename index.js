@@ -197,12 +197,12 @@ async function handleScreenFlowJson() {
     APPOINTMENT: {
       screen: "APPOINTMENT",
       data: {
-        // department: [
-        //   {
-        //     "id": "Cardiology",
-        //     "title": "Cardiology"
-        //   }
-        // ],
+        chamber: [
+          {
+            "id": "Cardiology",
+            "title": "Cardiology"
+          }
+        ],
         location: [
           {
             "id": "1",
