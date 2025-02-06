@@ -271,23 +271,44 @@ async function handleScreenFlowJson() {
 }
 
 
+const defaultFieldMappings = {
+  department: "chamber",
+  location: "location",
+  date: "date",
+  time: "time",
+  name: "name",
+  email: "email",
+  phone: "phone",
+  more_details: "more_details",
+};
 
+/**
+ * Dynamically maps fields while handling missing and new fields.
+ */
+const mapFields = (data, customMappings = {}) => {
+  let mappedData = {};
+  const finalMappings = { ...defaultFieldMappings, ...customMappings }; // Merge defaults with user-defined mappings
 
+  for (let key in data) {
+    let newKey = finalMappings[key] || key; // Use mapped name or original key
+    mappedData[newKey] = data[key];
+  }
+
+  return mappedData;
+};
 
 const getNextScreen = async (decryptedBody) => {
   const { screen, data, version, action, flow_token } = decryptedBody;
 
-  if (action === "ping") {
-    return { data: { status: "active" } };
-  }
+  if (action === "ping") return { data: { status: "active" } };
 
   if (data?.error) {
     console.warn("Received client error:", data);
     return { data: { acknowledged: true } };
   }
 
-
-  let SCREEN_RESPONSES = await handleScreenFlowJson()
+  let SCREEN_RESPONSES = await handleScreenFlowJson();
+  const mappedData = mapFields(data); // Dynamically map fields
 
   if (action === "INIT") {
     return {
@@ -308,37 +329,35 @@ const getNextScreen = async (decryptedBody) => {
           ...SCREEN_RESPONSES.APPOINTMENT,
           data: {
             ...SCREEN_RESPONSES.APPOINTMENT.data,
-            is_location_enabled: Boolean(data.department),
-            is_date_enabled: Boolean(data.department) && Boolean(data.location),
+            is_location_enabled: Boolean(mappedData.dept),
+            is_date_enabled: Boolean(mappedData.dept) && Boolean(mappedData.loc),
             is_time_enabled:
-              Boolean(data.department) &&
-              Boolean(data.location) &&
-              Boolean(data.date),
-            location: SCREEN_RESPONSES.APPOINTMENT.data.location,
-            date: SCREEN_RESPONSES.APPOINTMENT.data.date,
-            time: SCREEN_RESPONSES.APPOINTMENT.data.time,
+              Boolean(mappedData.dept) &&
+              Boolean(mappedData.loc) &&
+              Boolean(mappedData.appointmentDate),
+            ...mappedData, // Automatically include all available data fields
           },
         };
 
       case "DETAILS":
         const departmentName = "Beauty & Personal Care";
         const locationName = SCREEN_RESPONSES.APPOINTMENT.data.location.find(
-          (loc) => loc.id === data.location
-        )?.title;
+          (loc) => loc.id === mappedData.loc
+        )?.title || "Unknown Location";
+
         const dateName = SCREEN_RESPONSES.APPOINTMENT.data.date.find(
-          (date) => date.id === data.date
-        )?.title;
+          (date) => date.id === mappedData.appointmentDate
+        )?.title || "Unknown Date";
 
-        const appointment = `${departmentName} at ${locationName}\n${dateName} at ${data.time}`;
-
-        const details = `Name: ${data.name}\nEmail: ${data.email}\nPhone: ${data.phone}\n"${data.more_details}"`;
+        const appointment = `${departmentName} at ${locationName}\n${dateName} at ${mappedData.appointmentTime || "N/A"}`;
+        const details = `Name: ${mappedData.fullName || "N/A"}\nEmail: ${mappedData.emailAddress || "N/A"}\nPhone: ${mappedData.contactNumber || "N/A"}\n"${mappedData.extraInfo || ""}"`;
 
         return {
           ...SCREEN_RESPONSES.SUMMARY,
           data: {
             appointment,
             details,
-            ...data,
+            ...mappedData, // Include any new fields dynamically
           },
         };
 
@@ -347,23 +366,110 @@ const getNextScreen = async (decryptedBody) => {
           ...SCREEN_RESPONSES.SUCCESS,
           data: {
             extension_message_response: {
-              params: {
-                flow_token,
-                data
-
-              },
+              params: { flow_token, data: mappedData }, // Use mapped data to ensure field consistency
             },
           },
         };
 
       default:
-        break;
+        throw new Error("Unhandled screen type.");
     }
   }
 
-  console.error("Unhandled request body:", decryptedBody);
-  throw new Error("Unhandled endpoint request.");
+  throw new Error("Unhandled request body.");
 };
+
+
+// const getNextScreen = async (decryptedBody) => {
+//   const { screen, data, version, action, flow_token } = decryptedBody;
+
+//   if (action === "ping") {
+//     return { data: { status: "active" } };
+//   }
+
+//   if (data?.error) {
+//     console.warn("Received client error:", data);
+//     return { data: { acknowledged: true } };
+//   }
+
+
+//   let SCREEN_RESPONSES = await handleScreenFlowJson()
+
+//   if (action === "INIT") {
+//     return {
+//       ...SCREEN_RESPONSES.APPOINTMENT,
+//       data: {
+//         ...SCREEN_RESPONSES.APPOINTMENT.data,
+//         is_location_enabled: false,
+//         is_date_enabled: false,
+//         is_time_enabled: false,
+//       },
+//     };
+//   }
+
+//   if (action === "data_exchange") {
+//     switch (screen) {
+//       case "APPOINTMENT":
+//         return {
+//           ...SCREEN_RESPONSES.APPOINTMENT,
+//           data: {
+//             ...SCREEN_RESPONSES.APPOINTMENT.data,
+//             is_location_enabled: Boolean(data.department),
+//             is_date_enabled: Boolean(data.department) && Boolean(data.location),
+//             is_time_enabled:
+//               Boolean(data.department) &&
+//               Boolean(data.location) &&
+//               Boolean(data.date),
+//             location: SCREEN_RESPONSES.APPOINTMENT.data.location,
+//             date: SCREEN_RESPONSES.APPOINTMENT.data.date,
+//             time: SCREEN_RESPONSES.APPOINTMENT.data.time,
+//           },
+//         };
+
+//       case "DETAILS":
+//         const departmentName = "Beauty & Personal Care";
+//         const locationName = SCREEN_RESPONSES.APPOINTMENT.data.location.find(
+//           (loc) => loc.id === data.location
+//         )?.title;
+//         const dateName = SCREEN_RESPONSES.APPOINTMENT.data.date.find(
+//           (date) => date.id === data.date
+//         )?.title;
+
+//         const appointment = `${departmentName} at ${locationName}\n${dateName} at ${data.time}`;
+
+//         const details = `Name: ${data.name}\nEmail: ${data.email}\nPhone: ${data.phone}\n"${data.more_details}"`;
+
+//         return {
+//           ...SCREEN_RESPONSES.SUMMARY,
+//           data: {
+//             appointment,
+//             details,
+//             ...data,
+//           },
+//         };
+
+//       case "SUMMARY":
+//         return {
+//           ...SCREEN_RESPONSES.SUCCESS,
+//           data: {
+//             extension_message_response: {
+//               params: {
+//                 flow_token,
+//                 data
+
+//               },
+//             },
+//           },
+//         };
+
+//       default:
+//         break;
+//     }
+//   }
+
+//   console.error("Unhandled request body:", decryptedBody);
+//   throw new Error("Unhandled endpoint request.");
+// };
 
 const decryptRequest = (body, privateKey) => {
   const { encrypted_aes_key, encrypted_flow_data, initial_vector } = body;
