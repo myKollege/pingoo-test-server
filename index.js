@@ -70,166 +70,15 @@ async function connectToDatabase() {
 
 
 // ========================================= handling response  ====================================
-// Webhook endpoint
-app.post("/webhook", async (req, res) => {
-  const body = req.body;
 
-  if (body.object === "whatsapp_business_account") {
-    try {
-      for (const entry of body.entry) {
-        for (const change of entry.changes) {
-          if (change.value && change.value.messages) {
-            for (const message of change.value.messages) {
-              console.log("Received message:", message);
-
-              // if (message?.type === "text") {
-              // Save messages
-              // try {
-
-              //   // if (message?.text?.body && message?.text?.body?.includes('demo_restaurant')) {
-              //   //   console.log('found', message?.from);
-              //   //   await sendMessage(message?.from, 'select_category')
-              //   //   const tableNoMatch = message?.text?.body?.match(/table-(\d+)/);
-              //   //   const tableNo = tableNoMatch ? tableNoMatch[1] : null;
-              //   //   const user = message?.from
-
-              //   //   console.log(user, tableNo, 'pppppppp')
-
-              //   //   await db.collection(FLOW_SCREEN_COLLECTION).insertOne({ tableNo, user, message: message.text.body });
-              //   //   // await sendMessage(user, 'select_category')
-
-              //   // }
-
-              //   // else if (message?.text?.body && message?.text?.body?.includes('demo_booking')) {
-
-              //   //   await sendMessage(message?.from, 'demo_appointment_booking')
-
-              //   // }
-              //   // else if (message?.text?.body && message?.text?.body?.includes('demo_shop')) {
-
-              //   //   await sendMessage(message?.from, 'catalog_offer_test_two')
-
-              //   // }
-              //   // else if (message?.text?.body && message?.text?.body?.includes('school_start_demo')) {
-
-              //   //   await sendMessage(message?.from, 'school_start_demo')
-
-              //   // }
-
-
-
-
-
-
-
-
-
-
-
-
-              //   await db.collection(MESSAGE_COLLECTION).insertOne({ rawMessage: message });
-              //   console.log("Message saved to database:", message);
-              // } catch (error) {
-              //   console.error("Error saving message to database:", error);
-              // }
-              // }
-              // if (message.type === "order") {
-              //   // Save orders
-              //   try {
-              //     await db.collection(ORDER_COLLECTION).insertOne({ rawOrder: message });
-              //     console.log("Order saved to database:", message);
-              //   } catch (error) {
-              //     console.error("Error saving order to database:", error);
-              //   }
-              // }
-
-
-              if (message?.type === "text") {
-
-                if (message?.text?.body && message?.text?.body?.includes('school demo')) {
-                  console.log('found', message?.from);
-                  sendMessage(message?.from, 'school_demo2', 'text', "en")
-
-                }
-              } else if (message.type === 'interactive') {
-                await sendMessage(message?.from, 'thank_you_message')
-
-              }
-
-              else if (message.type === 'button') {
-                console.log(message?.button)
-                console.log(message?.button?.text)
-
-                if (message?.button?.text == 'Brochure') {
-                  await sendMessage(message?.from, 'school_brochure2')
-
-                }
-                else if (message?.button?.text == 'Application From') {
-                  console.log('here  ++++++++++++++', 'Application From')
-                  await sendMessage(message?.from, 'apply_for_school', 'flow')
-
-                }
-                else if (message?.button?.text == 'Support') {
-                  console.log('here  ++++++++++++++', 'Support From')
-                  await sendMessage(message?.from, 'school_support', 'flow')
-
-                }
-              }
-
-
-
-
-
-
-
-
-
-
-            }
-          }
-        }
-      }
-      res.sendStatus(200);
-    } catch (error) {
-      console.error("Error processing webhook:", error);
-      res.sendStatus(500);
-    }
-  } else {
-    res.sendStatus(404);
-  }
-});
-// Verification endpoint for webhook setup
-app.get("/webhook", (req, res) => {
-  const mode = req.query["hub.mode"];
-  const token = req.query["hub.verify_token"];
-  const challenge = req.query["hub.challenge"];
-
-  if (mode === "subscribe" && token === VERIFY_TOKEN) {
-    res.status(200).send(challenge);
-  } else {
-    res.sendStatus(403);
-  }
-});
 app.post("/pinggo-webhook", async (req, res) => {
   const body = req.body;
-
-  console.log(body, 'pppppppppppppp')
 
   const senderNumber = body?.phone_number;
   const message_body = body?.message_body;
   const message_type = body?.message_type;
   const timestamp = body?.timestamp;
   const message_entryArray = body?.message_entry;
-
-
-
-  // if (message?.type === "text") {
-
-  //   if (message?.text?.body && message?.text?.body?.includes('doctor demo')) {
-  //     console.log('found', message?.from);
-  //     sendMessage(message?.from, 'doctor_demo_one', 'flow')
-  //   }
-  // }
 
 
 
@@ -248,17 +97,10 @@ app.post("/pinggo-webhook", async (req, res) => {
 
 
             const data = messages?.value?.messages[0]
-            console.log(data, 'messages  0 ============= |||||||||||||');
-
             let from = data.from;
             let interactive = data.interactive.nfm_reply
-            console.log(interactive, 'interactive ============= |||||||||||||');
-
             let interactive_response_json = data.interactive.nfm_reply.response_json;
-            console.log(interactive_response_json, 'interactive_response_json  0 ============= |||||||||||||');
             let parsedResponse = JSON.parse(data.interactive.nfm_reply.response_json);
-            console.log(parsedResponse, 'parsedResponse** ============= |||||||||||||');
-
             let name = parsedResponse?.data?.name
             let email = parsedResponse?.data?.email
             let phone = parsedResponse?.data?.phone
@@ -275,10 +117,6 @@ app.post("/pinggo-webhook", async (req, res) => {
               { $set: { name, email, phone, time, date, location } },
               { upsert: true }
             );
-
-            console.log(result, '[[[[[[[[[[[[[[[[[[[[[')
-
-
           }
         }
       }
@@ -294,85 +132,7 @@ app.post("/pinggo-webhook", async (req, res) => {
 
   res.sendStatus(200);
 });
-// Verification endpoint for webhook setup
-app.get("/webhook", (req, res) => {
-  const mode = req.query["hub.mode"];
-  const token = req.query["hub.verify_token"];
-  const challenge = req.query["hub.challenge"];
 
-  if (mode === "subscribe" && token === VERIFY_TOKEN) {
-    res.status(200).send(challenge);
-  } else {
-    res.sendStatus(403);
-  }
-});
-
-// Endpoint to send messages
-app.post("/send-message", async (req, res) => {
-  const { phoneNumber, message } = req.body;
-
-  try {
-    const response = await axios.post(
-      `https://graph.facebook.com/v21.0/474152522447047/messages`,
-      {
-        "messaging_product": "whatsapp",
-        "to": phoneNumber,
-        "type": "template",
-        "template": {
-          "name": message,
-          "language": {
-            "code": "en_US"
-          }
-        }
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${ACCESS_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    console.log(response, 'pppppppppppppppppppppppp')
-    res.status(200).send(response.data);
-  } catch (error) {
-    console.error("Error sending message:", error.response.data);
-    res.status(500).send(error.response.data);
-  }
-});
-
-
-
-// GET API to fetch messages
-app.get("/messages", async (req, res) => {
-  try {
-    const messages = await db.collection(MESSAGE_COLLECTION).find().toArray();
-    res.status(200).json(messages);
-  } catch (error) {
-    console.error("Error fetching messages:", error);
-    res.status(500).send("Error fetching messages");
-  }
-});
-
-// GET endpoint to fetch all orders
-app.get("/orders", async (req, res) => {
-  try {
-    const orders = await db.collection(ORDER_COLLECTION).find().toArray();
-    res.status(200).json(orders);
-  } catch (error) {
-    console.error("Error fetching orders:", error);
-    res.status(500).json({ error: "Failed to fetch orders" });
-  }
-});
-app.get("/tables", async (req, res) => {
-  try {
-    const orders = await db.collection(table_COLLECTION).find().toArray();
-    res.status(200).json(orders);
-  } catch (error) {
-    console.error("Error fetching orders:", error);
-    res.status(500).json({ error: "Failed to fetch orders" });
-  }
-});
 app.get("/appointments", async (req, res) => {
   try {
     const orders = await db.collection(BOOKED_APPOINTMENTS).find().toArray();
@@ -384,15 +144,6 @@ app.get("/appointments", async (req, res) => {
 });
 
 
-app.delete("/appointments_all", async (req, res) => {
-  try {
-    const result = await db.collection(BOOKED_APPOINTMENTS).deleteMany({});
-    res.status(200).json({ message: "All appointments deleted successfully", deletedCount: result.deletedCount });
-  } catch (error) {
-    console.error("Error deleting appointments:", error);
-    res.status(500).json({ error: "Failed to delete appointments" });
-  }
-});
 
 
 app.delete("/appointments/:id", async (req, res) => {
@@ -416,185 +167,6 @@ app.delete("/appointments/:id", async (req, res) => {
 
 
 
-// const SCREEN_RESPONSES = {
-//   APPOINTMENT: {
-//     screen: "APPOINTMENT",
-//     data: {
-//       department: [
-//         {
-//           "id": "Cardiology",
-//           "title": "Cardiology"
-//         },
-//         {
-//           "id": "Neurology",
-//           "title": "Neurology"
-//         }
-//       ],
-//       location: [
-//         {
-//           "id": "1",
-//           "title": "King’s Cross, London"
-//         },
-//         {
-//           "id": "2",
-//           "title": "Oxford Street, London"
-//         }
-
-//       ],
-//       is_location_enabled: true,
-//       date: [
-//         {
-//           "id": "2022-02-28",
-//           "title": "Mon Feb 28 2025"
-//         }
-//       ],
-//       is_date_enabled: true,
-//       time: [
-//         {
-//           "id": "10:30",
-//           "title": "10:30"
-//         }
-//         // {
-//         //   "id": "11:30",
-//         //   "title": "11:30"
-//         // }
-
-//       ],
-//       is_time_enabled: true,
-//     }
-//   },
-//   DETAILS: {
-//     screen: "DETAILS",
-//     data: {
-//       department: "beauty",
-//       location: "1",
-//       date: "2024-01-01",
-//       time: "11:30",
-//     },
-//   },
-//   SUMMARY: {
-//     screen: "SUMMARY",
-//     data: {
-//       appointment:
-//         "Beauty & Personal Care Department at Kings Cross, London\nMon Jan 01 2024 at 11:30.",
-//       details:
-//         "Name: John Doe\nEmail: john@example.com\nPhone: 123456789\n\nA free skin care consultation, please",
-//       department: "beauty",
-//       location: "1",
-//       date: "2024-01-01",
-//       time: "11:30",
-//       name: "John Doe",
-//       email: "john@example.com",
-//       phone: "123456789",
-//       more_details: "A free skin care consultation, please",
-//     },
-//   },
-//   TERMS: {
-//     screen: "TERMS",
-//     data: {},
-//   },
-//   SUCCESS: {
-//     screen: "SUCCESS",
-//     data: {
-//       extension_message_response: {
-//         params: {
-//           flow_token: "REPLACE_FLOW_TOKEN",
-//           some_param_name: "PASS_CUSTOM_VALUE",
-//         },
-//       },
-//     },
-//   },
-// };
-const SCREEN_RESPONSES = {
-  APPOINTMENT: {
-    screen: "APPOINTMENT",
-    data: {
-      department: [
-        {
-          "id": "Cardiology",
-          "title": "Cardiology"
-        },
-        {
-          "id": "Neurology",
-          "title": "Neurology"
-        }
-      ],
-      location: [
-        {
-          "id": "1",
-          "title": "King’s Cross, London"
-        },
-        {
-          "id": "2",
-          "title": "Oxford Street, London"
-        }
-
-      ],
-      is_location_enabled: true,
-      date: [
-        {
-          "id": "2022-02-28",
-          "title": "Mon Feb 28 2025"
-        }
-      ],
-      is_date_enabled: true,
-      time: [
-        {
-          "id": "10:30",
-          "title": "10:30"
-        },
-        {
-          "id": "11:30",
-          "title": "11:30"
-        }
-
-      ],
-      is_time_enabled: true,
-    }
-  },
-  DETAILS: {
-    screen: "DETAILS",
-    data: {
-      department: "beauty",
-      location: "1",
-      date: "2024-01-01",
-      time: "11:30",
-    },
-  },
-  SUMMARY: {
-    screen: "SUMMARY",
-    data: {
-      appointment:
-        "Beauty & Personal Care Department at Kings Cross, London\nMon Jan 01 2024 at 11:30.",
-      details:
-        "Name: John Doe\nEmail: john@example.com\nPhone: 123456789\n\nA free skin care consultation, please",
-      department: "beauty",
-      location: "1",
-      date: "2024-01-01",
-      time: "11:30",
-      name: "John Doe",
-      email: "john@example.com",
-      phone: "123456789",
-      more_details: "A free skin care consultation, please",
-    },
-  },
-  TERMS: {
-    screen: "TERMS",
-    data: {},
-  },
-  SUCCESS: {
-    screen: "SUCCESS",
-    data: {
-      extension_message_response: {
-        params: {
-          flow_token: "REPLACE_FLOW_TOKEN",
-          some_param_name: "PASS_CUSTOM_VALUE",
-        },
-      },
-    },
-  },
-};
-
 
 
 
@@ -606,23 +178,8 @@ async function handleScreenFlowJson() {
     {
       "id": "10:30",
       "title": "10:30"
-    },
-    {
-      "id": "11:30",
-      "title": "11:30"
-    },
-    {
-      "id": "12:30",
-      "title": "12:30"
-    },
-    {
-      "id": "01:30",
-      "title": "01:30"
-    },
-    {
-      "id": "02:30",
-      "title": "02:30"
-    },
+    }
+
   ]
 
 
@@ -630,23 +187,11 @@ async function handleScreenFlowJson() {
 
   let availableSchedules = []
 
-
-
   if (bookedTimes) {
     availableSchedules = schedules.filter(schedule => !bookedTimes.has(schedule.id));
   } else {
     availableSchedules = schedules
   }
-
-
-
-
-
-
-
-
-
-
 
   const SCREEN_RESPONSES = {
     APPOINTMENT: {
@@ -656,10 +201,6 @@ async function handleScreenFlowJson() {
           {
             "id": "Cardiology",
             "title": "Cardiology"
-          },
-          {
-            "id": "Neurology",
-            "title": "Neurology"
           }
         ],
         location: [
@@ -667,11 +208,6 @@ async function handleScreenFlowJson() {
             "id": "1",
             "title": "King’s Cross, London"
           },
-          {
-            "id": "2",
-            "title": "Oxford Street, London"
-          }
-
         ],
         is_location_enabled: true,
         date: [
@@ -698,9 +234,9 @@ async function handleScreenFlowJson() {
       screen: "SUMMARY",
       data: {
         appointment:
-          "Beauty & Personal Care Department at Kings Cross, London\nMon Jan 01 2024 at 11:30.",
+          "Beauty & Personal",
         details:
-          "Name: John Doe\nEmail: john@example.com\nPhone: 123456789\n\nA free skin care consultation, please",
+          "Name: John Doe",
         department: "beauty",
         location: "1",
         date: "2024-01-01",
@@ -898,7 +434,8 @@ app.post("/flow", async (req, res) => {
       PRIVATE_KEY
     );
 
-    const responseData = await getNextScreen(decryptedBody);
+    // const responseData = await getNextScreen(decryptedBody);
+    const responseData = await handleScreenFlowJson()
     const encryptedResponse = encryptResponse(
       responseData,
       aesKeyBuffer,
@@ -921,73 +458,6 @@ app.get("/health", (req, res) => {
     },
   });
 });
-
-
-
-// Save or update data
-app.post('/save-flow', async (req, res) => {
-  try {
-    const { tableNo, user, message } = req.body;
-    if (!tableNo || !user || !message) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    const result = await db.collection(FLOW_SCREEN_COLLECTION).updateOne(
-      { tableNo },
-      { $set: { user, message } },
-      { upsert: true }
-    );
-
-    res.json({ success: true, result });
-  } catch (error) {
-    console.error('Error saving data:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-app.post('/save-appointment', async (req, res) => {
-  try {
-    const { mobile, date, time, location, department } = req.body;
-    if (!tableNo || !user || !message) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    const result = await db.collection(FLOW_SCREEN_COLLECTION).updateOne(
-      { mobile },
-      { $set: { date, time, location, department } },
-      { upsert: true }
-    );
-
-    res.json({ success: true, result });
-  } catch (error) {
-    console.error('Error saving data:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-// Get all data
-app.get('/get-flow-json', async (req, res) => {
-  try {
-    const data = await db.collection(FLOW_SCREEN_COLLECTION).find().toArray();
-    res.json({ success: true, data });
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // Start the server after the database is connected
@@ -1014,13 +484,9 @@ connectToDatabase().then(() => {
 
 async function sendMessage(phoneNumber, template_Name, type = 'text', language = "en_US") {
 
-
   if (!phoneNumber || !template_Name) {
     return
   }
-
-
-
   let body = {
     "messaging_product": "whatsapp",
     "to": phoneNumber,
@@ -1032,10 +498,6 @@ async function sendMessage(phoneNumber, template_Name, type = 'text', language =
       }
     }
   }
-
-
-
-
 
 
   if (type == 'flow') {
@@ -1061,105 +523,6 @@ async function sendMessage(phoneNumber, template_Name, type = 'text', language =
       }
     }
   }
-
-
-  if (template_Name == 'school_brochure2') {
-    body = {
-      "messaging_product": "whatsapp",
-      "to": phoneNumber,
-      "type": "template",
-      "template": {
-        "name": "school_brochure2",
-        "language": {
-          "code": "en_US"
-        }
-      },
-      "components": [
-        {
-          "type": "BUTTONS",
-          "buttons": [
-            {
-              "type": "URL",
-              "text": "Download Brochure",
-              "url": "https://drive.google.com/file/d/10zzA2bRWozpKUgZNCcXMD_MbRTt07BCd/view"
-            }
-          ]
-        }
-      ]
-    }
-  }
-
-
-  if (template_Name == 'doctor_demo_one') {
-    let body = {
-      "messaging_product": "whatsapp",
-      "recipient_type": "individual",
-      "to": phoneNumber,
-      "type": "template",
-      "template": {
-        "name": "doctor_demo_one",
-        "language": {
-          "code": "en_US"
-        },
-        "components": [
-          {
-            "type": "button",
-            "sub_type": "flow",
-            "index": "0",
-            "parameters": [
-              {
-                "type": "action",
-                "action": {
-                  "flow_token": "FLOW_TOKEN",
-                  "flow_action_data": {
-                    "department": [
-                      {
-                        "id": "Cardiology",
-                        "title": "Cardiology"
-                      },
-                      {
-                        "id": "Neurology",
-                        "title": "Neurology"
-                      }
-                    ],
-                    "location": [
-                      {
-                        "id": "1",
-                        "title": "King’s Cross, London"
-                      },
-                      {
-                        "id": "2",
-                        "title": "Oxford Street, London"
-                      }
-                    ],
-                    "date": [
-                      {
-                        "id": "2022-02-28",
-                        "title": "Mon Feb 28 2025"
-                      }
-                    ],
-                    "time": [
-                      {
-                        "id": "10:30",
-                        "title": "10:30"
-                      }
-
-                    ]
-                  }
-                }
-              }
-            ]
-          }
-        ]
-      }
-    }
-
-  }
-
-
-
-
-  console.log(body, '[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[')
 
   try {
 
