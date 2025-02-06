@@ -434,8 +434,8 @@ app.post("/flow", async (req, res) => {
       PRIVATE_KEY
     );
 
-    // const responseData = await getNextScreen(decryptedBody);
-    const responseData = await handleScreenFlowJson()
+    const responseData = await getNextScreen(decryptedBody);
+    // const responseData = await handleScreenFlowJson()
     const encryptedResponse = encryptResponse(
       responseData,
       aesKeyBuffer,
