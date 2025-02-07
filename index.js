@@ -75,8 +75,9 @@ app.post("/pinggo-webhook", async (req, res) => {
   const body = req.body;
 
 
+
   const response = await axios.post(
-    `http://89.116.121.214:5000/api/v1/flow-endpoint/webhook`,
+    "http://89.116.121.214:5000/api/v1/flow-endpoint/webhook",
     body,
     {
       headers: {
@@ -85,8 +86,7 @@ app.post("/pinggo-webhook", async (req, res) => {
     }
   );
 
-  const result = await response.json()
-  console.log(result, '|||||||||||||||||||||||||||||||')
+  console.log(response.data, "|||||||||||||||||||||||||||||||");
 
 
 
