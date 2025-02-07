@@ -9,7 +9,7 @@ const rawBody = JSON.stringify(body);
 const hmac = CryptoJS.HmacSHA256(rawBody, appSecret); // Calculate HMAC using CryptoJS
 const signature = hmac.toString(CryptoJS.enc.Hex);
 
-fetch("http://localhost:5000/api/v1/flow-endpoint", {
+fetch("http://89.116.121.214:5000/api/v1/flow-endpoint", {
     method: "POST",
     headers: {
         "Content-Type": "application/json",

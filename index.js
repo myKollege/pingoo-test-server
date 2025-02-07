@@ -74,54 +74,73 @@ async function connectToDatabase() {
 app.post("/pinggo-webhook", async (req, res) => {
   const body = req.body;
 
-  const senderNumber = body?.phone_number;
-  const message_body = body?.message_body;
-  const message_type = body?.message_type;
-  const timestamp = body?.timestamp;
-  const message_entryArray = body?.message_entry;
 
-
-
-
-  if (message_type === 'interactive') {
-    console.log('interactive');
-
-    if (Array.isArray(message_entryArray)) {
-      for (let i = 0; i < message_entryArray.length; i++) {
-        const element = message_entryArray[i];
-        const dataArray = element?.changes;
-
-        if (Array.isArray(dataArray)) {
-          for (let j = 0; j < dataArray.length; j++) {
-            const messages = dataArray[j];
-
-
-            const data = messages?.value?.messages[0]
-            let from = data.from;
-            let interactive = data.interactive.nfm_reply
-            let interactive_response_json = data.interactive.nfm_reply.response_json;
-            let parsedResponse = JSON.parse(data.interactive.nfm_reply.response_json);
-            let name = parsedResponse?.data?.name
-            let email = parsedResponse?.data?.email
-            let phone = parsedResponse?.data?.phone
-            let time = parsedResponse?.data?.time
-            let date = parsedResponse?.data?.date
-            let location = parsedResponse?.data?.location
-
-            console.log(name, email, phone, time, date, location)
-
-
-
-            const result = await db.collection(BOOKED_APPOINTMENTS).updateOne(
-              { senderNumber },
-              { $set: { name, email, phone, time, date, location } },
-              { upsert: true }
-            );
-          }
-        }
-      }
+  const response = await axios.post(
+    `http://89.116.121.214:5000/api/v1/flow-endpoint/webhook`,
+    body,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
     }
-  }
+  );
+
+  const result = await response.json()
+  console.log(result, '|||||||||||||||||||||||||||||||')
+
+
+
+
+
+
+  // const senderNumber = body?.phone_number;
+  // const message_body = body?.message_body;
+  // const message_type = body?.message_type;
+  // const timestamp = body?.timestamp;
+  // const message_entryArray = body?.message_entry;
+
+
+
+
+  // if (message_type === 'interactive') {
+  //   console.log('interactive');
+
+  //   if (Array.isArray(message_entryArray)) {
+  //     for (let i = 0; i < message_entryArray.length; i++) {
+  //       const element = message_entryArray[i];
+  //       const dataArray = element?.changes;
+
+  //       if (Array.isArray(dataArray)) {
+  //         for (let j = 0; j < dataArray.length; j++) {
+  //           const messages = dataArray[j];
+
+
+  //           const data = messages?.value?.messages[0]
+  //           let from = data.from;
+  //           let interactive = data.interactive.nfm_reply
+  //           let interactive_response_json = data.interactive.nfm_reply.response_json;
+  //           let parsedResponse = JSON.parse(data.interactive.nfm_reply.response_json);
+  //           let name = parsedResponse?.data?.name
+  //           let email = parsedResponse?.data?.email
+  //           let phone = parsedResponse?.data?.phone
+  //           let time = parsedResponse?.data?.time
+  //           let date = parsedResponse?.data?.date
+  //           let location = parsedResponse?.data?.location
+
+  //           console.log(name, email, phone, time, date, location)
+
+
+
+  //           const result = await db.collection(BOOKED_APPOINTMENTS).updateOne(
+  //             { senderNumber },
+  //             { $set: { name, email, phone, time, date, location } },
+  //             { upsert: true }
+  //           );
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
 
 
@@ -272,7 +291,7 @@ async function handleScreenFlowJson() {
 
 
 const defaultFieldMappings = {
-  department: "chamber",
+  department: "department",
   location: "location",
   date: "date",
   time: "time",
@@ -286,15 +305,31 @@ const defaultFieldMappings = {
  * Dynamically maps fields while handling missing and new fields.
  */
 const mapFields = (data, customMappings = {}) => {
-  let mappedData = {};
-  const finalMappings = { ...defaultFieldMappings, ...customMappings }; // Merge defaults with user-defined mappings
+  const defaultFieldMappings = {
+    department: "dept",
+    location: "loc",
+    date: "appointmentDate",
+    time: "appointmentTime",
+    name: "fullName",
+    email: "emailAddress",
+    phone: "contactNumber",
+    more_details: "extraInfo",
+  };
 
-  for (let key in data) {
-    let newKey = finalMappings[key] || key; // Use mapped name or original key
-    mappedData[newKey] = data[key];
-  }
+  // Merge defaults with custom mappings (user-provided)
+  const mergedMappings = { ...defaultFieldMappings, ...customMappings };
 
-  return mappedData;
+  return Object.entries(data).reduce((acc, [key, value]) => {
+    // If the field is in the mappings and set to `null`, remove it
+    if (mergedMappings[key] === null) {
+      return acc; // Skip this field
+    }
+
+    // If the field is renamed, use the new name; otherwise, keep original
+    const mappedKey = mergedMappings[key] || key;
+    acc[mappedKey] = value;
+    return acc;
+  }, {});
 };
 
 const getNextScreen = async (decryptedBody) => {
