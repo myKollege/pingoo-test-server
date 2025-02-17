@@ -186,6 +186,60 @@ app.delete("/appointments/:id", async (req, res) => {
 
 
 
+// Webhook endpoint for receiving messages
+app.post("/webhook", (req, res) => {
+  const body = req.body;
+
+
+  //Verify this is a webhook from WhatsApp
+  if (body.object === "whatsapp_business_account") {
+    body.entry.forEach((entry) => {
+      const changes = entry.changes;
+      changes.forEach((change) => {
+        if (change.value && change.value.messages) {
+          const messages = change.value.messages;
+          messages.forEach(async (message) => {
+            console.log("Received message:", message);
+
+            let body = message
+
+
+            const response = await axios.post(
+              "http://89.116.121.214:5000/api/v1/flow-endpoint/webhook",
+              body,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+
+
+          });
+        }
+      });
+    });
+
+    res.sendStatus(200);
+  } else {
+    res.sendStatus(404);
+  }
+});
+
+// Verification endpoint for webhook setup
+app.get("/webhook", (req, res) => {
+  const mode = req.query["hub.mode"];
+  const token = req.query["hub.verify_token"];
+  const challenge = req.query["hub.challenge"];
+
+  if (mode === "subscribe" && token === VERIFY_TOKEN) {
+    res.status(200).send(challenge);
+  } else {
+    res.sendStatus(403);
+  }
+});
+
+
 
 
 
