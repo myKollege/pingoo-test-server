@@ -37,7 +37,7 @@ async function connectToDatabase() {
 app.post("/pinggo-webhook", async (req, res) => {
     const body = req.body;
     const response = await axios.post(
-        "https://20.193.155.204:5000/api/v1/whatsapp/webhook",
+        "http://20.193.155.204:5000/api/v1/whatsapp/webhook",
         body,
         {
             headers: {
