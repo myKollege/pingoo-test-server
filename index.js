@@ -40,6 +40,15 @@ app.post("/pinggo-webhook", async (req, res) => {
     const body = req.body;
     console.log(body, 'body         body          body          body         body        body       body      body       body        body')
 
+    const senderNumber = body?.phone_number;
+    const message_body = body?.message_body;
+    const message_type = body?.message_type;
+    const timestamp = body?.timestamp;
+    const message_id = body?.message_id;
+    const message_entryArray = body?.message_entry;
+
+    await sendPushNotification(senderNumber, message_body)
+
 
 
 
@@ -56,6 +65,27 @@ app.post("/pinggo-webhook", async (req, res) => {
     );
     res.sendStatus(200);
 });
+
+
+
+
+
+async function sendPushNotification(senderNumber, message_body) {
+    const response = await fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            to: "ExponentPushToken[3EFoP8COtlRkXN-CpPsPxj]",
+            title: senderNumber,
+            body: message_body
+        })
+    });
+
+    const data = await response.json();
+    console.log("Push notification response:", data);
+}
 
 
 
