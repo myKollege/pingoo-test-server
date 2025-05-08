@@ -4,7 +4,7 @@ const { MongoClient } = require("mongodb");
 const cors = require("cors"); // Import the CORS middleware
 const axios = require("axios");
 const crypto = require("crypto");
-
+const Pusher = require("pusher");
 
 const app = express();
 app.use(bodyParser.json());
@@ -34,37 +34,85 @@ async function connectToDatabase() {
 
 // ========================================= handling response  ====================================
 
+// app.post("/pinggo-webhook", async (req, res) => {
+
+
+//     const body = req.body;
+//     console.log(body, 'body         body          body          body         body        body       body      body       body        body')
+
+//     const senderNumber = body?.phone_number;
+//     const message_body = body?.message_body;
+//     const message_type = body?.message_type;
+//     const timestamp = body?.timestamp;
+//     const message_id = body?.message_id;
+//     const message_entryArray = body?.message_entry;
+
+//     await sendPushNotification(senderNumber, message_body)
+
+
+
+
+
+
+//     const response = await axios.post(
+//         "http://20.193.155.204:5000/api/v1/whatsapp/webhook",
+//         body,
+//         {
+//             headers: {
+//                 "Content-Type": "application/json",
+//             },
+//         }
+//     );
+//     res.sendStatus(200);
+// });
+
+
+
+const pusher = new Pusher({
+    appId: "1890760",
+    key: "b03fdada9518666ace76",
+    secret: "90342809c53f668b002f",
+    cluster: "ap2",
+    useTLS: true,
+});
+
+
 app.post("/pinggo-webhook", async (req, res) => {
-
-
     const body = req.body;
-    console.log(body, 'body         body          body          body         body        body       body      body       body        body')
+    console.log("Incoming webhook body:", body);
 
     const senderNumber = body?.phone_number;
     const message_body = body?.message_body;
     const message_type = body?.message_type;
     const timestamp = body?.timestamp;
     const message_id = body?.message_id;
-    const message_entryArray = body?.message_entry;
 
-    await sendPushNotification(senderNumber, message_body)
+    // ✅ Trigger real-time event via Pusher
+    pusher.trigger("whatsapp-channel", "new-message", {
+        senderNumber,
+        message_body,
+        message_type,
+        timestamp,
+        message_id
+    });
 
+    // ✅ Send Push Notification
+    await sendPushNotification(senderNumber, message_body);
 
-
-
-
-
-    const response = await axios.post(
-        "http://20.193.155.204:5000/api/v1/whatsapp/webhook",
-        body,
-        {
+    // ✅ Forward Webhook
+    try {
+        await axios.post("http://20.193.155.204:5000/api/v1/whatsapp/webhook", body, {
             headers: {
                 "Content-Type": "application/json",
             },
-        }
-    );
+        });
+    } catch (err) {
+        console.error("Error forwarding webhook:", err.message);
+    }
+
     res.sendStatus(200);
 });
+
 
 
 
