@@ -101,11 +101,11 @@ app.post("/pinggo-webhook", async (req, res) => {
 
     // ✅ Forward Webhook
     try {
-        await axios.post("http://20.193.155.204:5000/api/v1/whatsapp/webhook", body, {
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+        // await axios.post("http://20.193.155.204:5000/api/v1/whatsapp/webhook", body, {
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //     },
+        // });
     } catch (err) {
         console.error("Error forwarding webhook:", err.message);
     }
